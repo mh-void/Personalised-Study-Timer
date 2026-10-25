@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Study Station</title>
+<style>
+:root {
+  --bg-color: #0b0c10 !important;
+  --text-color: #ffffff !important;
+  --text-muted: #a0a5b5 !important;
+  --text-placeholder: #2f333e !important;
+  --card-bg: rgba(255, 255, 255, 0.02) !important;
+  --blur-intensity: 12px;
+  --accent: #8ea2ff;
+  --line: rgba(255, 255, 255, 0.07);
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --panel-width: 340px;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  overflow-y: scroll;
+}
+
+@supports not selector(::-webkit-scrollbar) {
+  html {
+    scrollbar-color: rgba(255, 255, 255, 0.2) #0b0c10;
+    scrollbar-width: auto;
+  }
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  width: 10px !important;
+  display: block !important;
+}
+
+html::-webkit-scrollbar-track,
+body::-webkit-scrollbar-track {
+  background: var(--bg-color) !important;
+  border-left: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+html::-webkit-scrollbar-thumb,
+body::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2) !important;
+  border-radius: 5px;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--bg-color) !important;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 30px 30px;
+  color: var(--text-color);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 22% 28%, rgba(142, 162, 255, 0.16), transparent 42%),
+    radial-gradient(circle at 78% 72%, rgba(142, 162, 255, 0.1), transparent 46%),
+    repeating-radial-gradient(circle at 50% 45%, transparent 0 58px, rgba(255, 255, 255, 0.06) 58px 59px);
+}
+
+.workspace {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+}
+
+.main-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 3rem 2rem 6rem;
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.workspace.panel-open .main-content {
+  padding-right: calc(var(--panel-width) + 2rem);
+}
+
+.content-wrap {
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.app-title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 300;
+  letter-spacing: 0.02em;
+}
+
+.app-sub {
+  margin: 0.25rem 0 0;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.btn {
+  appearance: none;
+  font: inherit;
+  font-size: 0.95rem;
+  color: var(--text-color);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  padding: 0.8rem 1.6rem;
+  cursor: pointer;
+  transition: transform 0.25s var(--ease), background 0.25s var(--ease), border-color 0.25s var(--ease), opacity 0.25s var(--ease);
+}
+
+.btn:hover {
+  background: rgba(255, 255, 255, 0.09);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.btn:focus-visible,
+.chip:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.btn-primary {
+  background: var(--text-color);
+  color: var(--bg-color);
+  border-color: transparent;
+  min-width: 8rem;
+  font-weight: 500;
+}
+
+.btn-primary:hover {
+  background: var(--text-color);
+  opacity: 0.88;
+}
+
+.btn-small {
+  padding: 0.4rem 1rem;
+  font-size: 0.8rem;
+}
+
+.btn:disabled,
+.chip:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.timers {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+  gap: 2rem;
+}
+
+.timer-card {
+  background: var(--card-bg) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  backdrop-filter: blur(var(--blur-intensity, 12px)) !important;
+  -webkit-backdrop-filter: blur(var(--blur-intensity, 12px)) !important;
+  border-radius: 24px;
+  padding: 3rem 2rem;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  min-width: 0;
+  transition: border-color 0.5s var(--ease);
+}
+
+.timer-card.running {
+  border-color: rgba(142, 162, 255, 0.35) !important;
+}
+
+@keyframes finishPulse {
+  0%, 100% { box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4), 0 0 0 0 rgba(142, 162, 255, 0); }
+  50% { box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4), 0 0 0 6px rgba(142, 162, 255, 0.28); }
+}
+
+.timer-card.finished {
+  animation: finishPulse 1.4s ease-in-out 4;
+}
+
+.name-input {
+  width: 100%;
+  max-width: 18rem;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  color: var(--text-color);
+  font: inherit;
+  font-size: 1.05rem;
+  text-align: center;
+  letter-spacing: 0.04em;
+  padding: 0.35rem 0.5rem;
+}
+
+.name-input::placeholder,
+.minutes-input::placeholder {
+  color: var(--text-placeholder);
+}
+
+.status {
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  min-height: 1.1em;
+}
+
+.time-display {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-weight: 100;
+  letter-spacing: -3px;
+  font-size: clamp(5rem, 12vw, 8rem);
+  font-size: clamp(3rem, 31cqi, 8rem);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  white-space: nowrap;
+  color: var(--text-color);
+  margin: 0.25rem 0;
+}
+
+.time-display.long {
+  font-size: clamp(2.2rem, 21cqi, 5.6rem);
+}
+
+.progress {
+  width: 100%;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  width: 100%;
+  background: var(--text-color);
+  transform-origin: left center;
+  transform: scaleX(0);
+  transition: transform 0.4s linear;
+}
+
+.controls {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 0.5rem;
+}
+
+.minutes-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.minutes-input {
+  width: 5.5rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  color: var(--text-color);
+  font: inherit;
+  text-align: center;
+  padding: 0.5rem 0.5rem;
+}
+
+.minutes-input.invalid {
+  border-color: #ff6b7a;
+}
+
+.minutes-input:disabled {
+  opacity: 0.45;
+}
+
+.hint {
+  min-width: 4.5rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.hint.invalid {
+  color: #ff8b97;
+}
+
+.presets {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.chip {
+  appearance: none;
+  font: inherit;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.4rem 0.9rem;
+  cursor: pointer;
+  transition: all 0.25s var(--ease);
+}
+
+.chip:hover:not(:disabled) {
+  color: var(--text-color);
+  border-color: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.dashboard {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  gap: 2rem;
+  margin-bottom: 4rem;
+}
+
+.panel-card {
+  background: var(--card-bg) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  backdrop-filter: blur(var(--blur-intensity, 12px)) !important;
+  -webkit-backdrop-filter: blur(var(--blur-intensity, 12px)) !important;
+  border-radius: 24px;
+  padding: 2rem;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+  min-width: 0;
+}
+
+.panel-card h2 {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.total-value {
+  margin-top: 1.25rem;
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 200;
+  letter-spacing: -1px;
+  line-height: 1.1;
+  word-break: break-word;
+}
+
+.total-sub {
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.log-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.log-list {
+  list-style: none;
+  margin: 0;
+  padding: 0 0.5rem 0 0;
+  max-height: 280px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+
+.log-list li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 1rem;
+  align-items: baseline;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 0.95rem;
+}
+
+.log-list li:last-child {
+  border-bottom: 0;
+}
+
+.log-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.log-dur {
+  font-variant-numeric: tabular-nums;
+}
+
+.log-time {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.log-list li.empty {
+  display: block;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  border-bottom: 0;
+}
+
+.settings-panel {
+  width: 340px;
+  min-width: 340px;
+  position: fixed;
+  top: 0;
+  right: -340px;
+  height: 100vh;
+  background-color: rgba(11, 12, 16, 0.99);
+  border-left: 1px solid rgba(255, 255, 255, 0.04);
+  z-index: 999;
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  visibility: hidden;
+  padding: 2rem 1.75rem;
+  overflow-y: auto;
+  color: #ffffff;
+}
+
+.settings-panel.active {
+  right: 0;
+  visibility: visible;
+  box-shadow: -30px 0 60px rgba(0, 0, 0, 0.35);
+}
+
+.settings-panel .btn {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.settings-panel .btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+}
+
+.panel-head h2 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 300;
+  letter-spacing: 0.03em;
+}
+
+.setting {
+  margin-bottom: 1.75rem;
+}
+
+.setting-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 0.85rem;
+  color: #a0a5b5;
+  margin-bottom: 0.65rem;
+}
+
+.setting-label output {
+  color: #ffffff;
+  font-variant-numeric: tabular-nums;
+}
+
+.settings-panel input[type="range"] {
+  width: 100%;
+  accent-color: #8ea2ff;
+}
+
+.settings-panel input[type="color"] {
+  width: 100%;
+  height: 2.6rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 0.25rem;
+  cursor: pointer;
+}
+
+.panel-note {
+  margin: 2rem 0 0;
+  font-size: 0.8rem;
+  color: #a0a5b5;
+}
+
+@media (max-width: 900px) {
+  .workspace.panel-open .main-content {
+    padding-right: 2rem;
+  }
+
+  .dashboard {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .main-content {
+    padding: 2rem 1rem 6rem;
+  }
+
+  .workspace.panel-open .main-content {
+    padding-right: 1rem;
+  }
+
+  .timer-card {
+    padding: 2.5rem 1.5rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .settings-panel {
+    width: 100vw;
+    min-width: 0;
+    right: -100vw;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .main-content,
+  .settings-panel,
+  .progress-fill,
+  .btn,
+  .chip {
+    transition-duration: 0.01s;
+  }
+
+  .timer-card.finished {
+    animation: none;
+  }
+}
+</style>
+</head>
+<body>
+<div class="workspace" id="workspace">
+  <main class="main-content" id="mainContent">
+    <div class="content-wrap">
+      <header class="top-bar">
+        <div>
+          <h1 class="app-title">Study Station</h1>
+          <p class="app-sub">Two independent timers for O3 and A-Level past paper sessions</p>
+        </div>
+        <button class="btn" id="settingsToggle" type="button" aria-expanded="false" aria-controls="settingsPanel">Settings</button>
+      </header>
+
+      <section class="timers" aria-label="Timers">
+        <article class="timer-card" data-timer="a">
+          <input class="name-input" type="text" maxlength="28" spellcheck="false" autocomplete="off" placeholder="Timer A" aria-label="Name of timer A" data-role="name">
+          <div class="status" data-role="status">Ready</div>
+          <div class="time-display" data-role="display" role="timer" aria-label="Timer A countdown">45:00</div>
+          <div class="progress"><div class="progress-fill" data-role="fill"></div></div>
+          <div class="controls">
+            <button class="btn btn-primary" type="button" data-role="toggle">Start</button>
+            <button class="btn" type="button" data-role="reset">Reset</button>
+          </div>
+          <div class="minutes-row">
+            <label for="minutesA">Minutes</label>
+            <input class="minutes-input" id="minutesA" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" placeholder="45" data-role="minutes">
+            <span class="hint" data-role="hint"></span>
+          </div>
+          <div class="presets" aria-label="Presets for timer A">
+            <button class="chip" type="button" data-preset="Past Paper" data-min="45">Past Paper &middot; 45m</button>
+            <button class="chip" type="button" data-preset="Short Test" data-min="5">Short Test &middot; 5m</button>
+            <button class="chip" type="button" data-preset="Relax" data-min="15">Relax &middot; 15m</button>
+          </div>
+        </article>
+
+        <article class="timer-card" data-timer="b">
+          <input class="name-input" type="text" maxlength="28" spellcheck="false" autocomplete="off" placeholder="Timer B" aria-label="Name of timer B" data-role="name">
+          <div class="status" data-role="status">Ready</div>
+          <div class="time-display" data-role="display" role="timer" aria-label="Timer B countdown">15:00</div>
+          <div class="progress"><div class="progress-fill" data-role="fill"></div></div>
+          <div class="controls">
+            <button class="btn btn-primary" type="button" data-role="toggle">Start</button>
+            <button class="btn" type="button" data-role="reset">Reset</button>
+          </div>
+          <div class="minutes-row">
+            <label for="minutesB">Minutes</label>
+            <input class="minutes-input" id="minutesB" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" placeholder="15" data-role="minutes">
+            <span class="hint" data-role="hint"></span>
+          </div>
+          <div class="presets" aria-label="Presets for timer B">
+            <button class="chip" type="button" data-preset="Past Paper" data-min="45">Past Paper &middot; 45m</button>
+            <button class="chip" type="button" data-preset="Short Test" data-min="5">Short Test &middot; 5m</button>
+            <button class="chip" type="button" data-preset="Relax" data-min="15">Relax &middot; 15m</button>
+          </div>
+        </article>
+      </section>
+
+      <section class="dashboard" aria-label="Session metrics">
+        <div class="panel-card">
+          <h2>Total Focus Time</h2>
+          <div class="total-value" id="totalFocus">0s</div>
+          <div class="total-sub" id="sessionCount">0 sessions completed</div>
+        </div>
+        <div class="panel-card">
+          <div class="log-head">
+            <h2>Completed Sessions Log</h2>
+            <button class="btn btn-small" id="clearLog" type="button">Clear</button>
+          </div>
+          <ul class="log-list" id="logList"></ul>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <aside class="settings-panel" id="settingsPanel" aria-label="Settings" aria-hidden="true">
+    <div class="panel-head">
+      <h2>Settings</h2>
+      <button class="btn btn-small" id="settingsClose" type="button">Close</button>
+    </div>
+
+    <div class="setting">
+      <div class="setting-label"><label for="blurSlider">Glass blur</label><output id="blurValue" for="blurSlider">12px</output></div>
+      <input type="range" id="blurSlider" min="0" max="40" step="1" value="12">
+    </div>
+
+    <div class="setting">
+      <div class="setting-label"><label for="bgPicker">Background colour</label></div>
+      <input type="color" id="bgPicker" value="#0b0c10">
+    </div>
+
+    <div class="setting">
+      <div class="setting-label"><label for="textPicker">Text colour</label></div>
+      <input type="color" id="textPicker" value="#ffffff">
+    </div>
+
+    <button class="btn" id="resetAppearance" type="button">Reset appearance</button>
+
+    <p class="panel-note">Everything on this page is saved in this browser only: timer names, durations, appearance and your session log.</p>
+  </aside>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var STORE_KEY = 'studyStation.v1';
+  var MAX_SECONDS = 36000;
+  var LOG_LIMIT = 100;
+  var DEFAULT_SETTINGS = { blur: 12, bg: '#0b0c10', text: '#ffffff' };
+  var HEX = /^#[0-9a-fA-F]{6}$/;
+
+  var settings = { blur: DEFAULT_SETTINGS.blur, bg: DEFAULT_SETTINGS.bg, text: DEFAULT_SETTINGS.text };
+  var sessionLog = [];
+  var totalSeconds = 0;
+  var completedCount = 0;
+  var audioCtx = null;
+  var timers = {};
+
+  var workspace = document.getElementById('workspace');
+  var panel = document.getElementById('settingsPanel');
+  var toggleBtn = document.getElementById('settingsToggle');
+  var closeBtn = document.getElementById('settingsClose');
+  var blurSlider = document.getElementById('blurSlider');
+  var blurValue = document.getElementById('blurValue');
+  var bgPicker = document.getElementById('bgPicker');
+  var textPicker = document.getElementById('textPicker');
+  var resetAppearanceBtn = document.getElementById('resetAppearance');
+  var totalFocusEl = document.getElementById('totalFocus');
+  var sessionCountEl = document.getElementById('sessionCount');
+  var logListEl = document.getElementById('logList');
+  var clearLogBtn = document.getElementById('clearLog');
+
+  function pad(n) {
+    return n < 10 ? '0' + n : String(n);
+  }
+
+  function formatClock(sec) {
+    sec = Math.max(0, Math.round(sec));
+    var h = Math.floor(sec / 3600);
+    var m = Math.floor((sec % 3600) / 60);
+    var s = sec % 60;
+    return h > 0 ? h + ':' + pad(m) + ':' + pad(s) : pad(m) + ':' + pad(s);
+  }
+
+  function formatDuration(sec) {
+    sec = Math.max(0, Math.round(sec));
+    var h = Math.floor(sec / 3600);
+    var m = Math.floor((sec % 3600) / 60);
+    var s = sec % 60;
+    if (h > 0) return h + 'h ' + m + 'm ' + s + 's';
+    if (m > 0) return m + 'm' + (s ? ' ' + s + 's' : '');
+    return s + 's';
+  }
+
+  function parseMinutes(raw) {
+    var val = String(raw === undefined || raw === null ? '' : raw).trim().replace(',', '.');
+    if (val.charAt(0) === '.') val = '0' + val;
+    if (!/^\d+(\.\d*)?$/.test(val)) return null;
+    var secs = Math.round(parseFloat(val) * 60);
+    if (!isFinite(secs) || secs < 1 || secs > MAX_SECONDS) return null;
+    return secs;
+  }
+
+  function minutesToText(secs) {
+    return String(parseFloat((secs / 60).toFixed(3)));
+  }
+
+  function wakeAudio() {
+    try {
+      if (!audioCtx) {
+        var Ctx = window.AudioContext || window.webkitAudioContext;
+        if (Ctx) audioCtx = new Ctx();
+      }
+      if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+    } catch (err) {
+      audioCtx = null;
+    }
+  }
+
+  function chime() {
+    if (!audioCtx) return;
+    try {
+      [0, 0.35, 0.7].forEach(function (offset, i) {
+        var osc = audioCtx.createOscillator();
+        var gain = audioCtx.createGain();
+        var t = audioCtx.currentTime + offset;
+        osc.type = 'sine';
+        osc.frequency.value = i === 2 ? 988 : 784;
+        gain.gain.setValueAtTime(0.0001, t);
+        gain.gain.exponentialRampToValueAtTime(0.25, t + 0.03);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.3);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(t);
+        osc.stop(t + 0.32);
+      });
+    } catch (err) {
+      return;
+    }
+  }
+
+  function save() {
+    try {
+      var payload = {
+        settings: settings,
+        timers: {},
+        log: sessionLog,
+        totalSeconds: totalSeconds,
+        completedCount: completedCount
+      };
+      Object.keys(timers).forEach(function (key) {
+        payload.timers[key] = timers[key].toJSON();
+      });
+      localStorage.setItem(STORE_KEY, JSON.stringify(payload));
+    } catch (err) {
+      return;
+    }
+  }
+
+  function readSaved() {
+    try {
+      var raw = localStorage.getItem(STORE_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch (err) {
+      return null;
+    }
+  }
+
+  function updateTitle() {
+    var active = Object.keys(timers)
+      .map(function (k) { return timers[k]; })
+      .filter(function (t) { return t.running; })
+      .sort(function (a, b) { return a.remaining - b.remaining; })[0];
+    document.title = active ? formatClock(active.remaining) + ' \u00b7 ' + active.displayName() : 'Study Station';
+  }
+
+  class StudyTimer {
+    constructor(key, root, defaults) {
+      this.key = key;
+      this.root = root;
+      this.defaults = defaults;
+      this.el = {
+        name: root.querySelector('[data-role="name"]'),
+        status: root.querySelector('[data-role="status"]'),
+        display: root.querySelector('[data-role="display"]'),
+        fill: root.querySelector('[data-role="fill"]'),
+        toggle: root.querySelector('[data-role="toggle"]'),
+        reset: root.querySelector('[data-role="reset"]'),
+        minutes: root.querySelector('[data-role="minutes"]'),
+        hint: root.querySelector('[data-role="hint"]')
+      };
+      this.presetButtons = Array.prototype.slice.call(root.querySelectorAll('[data-preset]'));
+      this.ticker = null;
+      this.endAt = 0;
+      this.running = false;
+      this.el.name.value = defaults.name;
+      this.el.minutes.value = defaults.minutes;
+      this.total = parseMinutes(defaults.minutes);
+      this.remaining = this.total;
+      this.bind();
+      this.render();
+    }
+
+    displayName() {
+      var typed = this.el.name.value.trim();
+      return typed || this.defaults.fallback;
+    }
+
+    bind() {
+      var self = this;
+      this.el.toggle.addEventListener('click', function () {
+        if (self.running) self.pause(); else self.start();
+      });
+      this.el.reset.addEventListener('click', function () {
+        self.reset();
+      });
+      this.el.minutes.addEventListener('input', function () {
+        self.onMinutesInput();
+      });
+      this.el.minutes.addEventListener('change', function () {
+        if (!self.isLocked()) {
+          self.el.minutes.value = minutesToText(self.total);
+          self.el.minutes.classList.remove('invalid');
+          self.render();
+          save();
+        }
+      });
+      this.el.name.addEventListener('input', function () {
+        updateTitle();
+        save();
+      });
+      this.presetButtons.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          self.loadPreset(btn.getAttribute('data-preset'), btn.getAttribute('data-min'));
+        });
+      });
+    }
+
+    isLocked() {
+      return this.running || (this.remaining > 0 && this.remaining < this.total);
+    }
+
+    onMinutesInput() {
+      if (this.isLocked()) return;
+      var secs = parseMinutes(this.el.minutes.value);
+      if (secs === null) {
+        this.el.minutes.classList.add('invalid');
+        this.el.hint.textContent = 'Try 25 or .2';
+        this.el.hint.classList.add('invalid');
+        return;
+      }
+      this.el.minutes.classList.remove('invalid');
+      this.el.hint.classList.remove('invalid');
+      this.total = secs;
+      this.remaining = secs;
+      this.root.classList.remove('finished');
+      this.render();
+      save();
+    }
+
+    loadPreset(label, minutes) {
+      if (this.isLocked()) return;
+      this.el.name.value = label;
+      this.el.minutes.value = String(minutes);
+      this.onMinutesInput();
+      save();
+    }
+
+    start() {
+      var self = this;
+      if (this.running) return;
+      if (!this.isLocked() && parseMinutes(this.el.minutes.value) === null) {
+        this.el.minutes.classList.add('invalid');
+        this.el.hint.textContent = 'Try 25 or .2';
+        this.el.hint.classList.add('invalid');
+        this.el.minutes.focus();
+        return;
+      }
+      if (this.remaining <= 0) this.remaining = this.total;
+      wakeAudio();
+      this.root.classList.remove('finished');
+      this.endAt = Date.now() + this.remaining * 1000;
+      this.running = true;
+      this.ticker = setInterval(function () { self.tick(); }, 250);
+      this.render();
+      save();
+    }
+
+    pause() {
+      if (!this.running) return;
+      clearInterval(this.ticker);
+      this.ticker = null;
+      this.remaining = Math.max(1, Math.ceil((this.endAt - Date.now()) / 1000));
+      this.running = false;
+      this.render();
+      save();
+    }
+
+    reset() {
+      clearInterval(this.ticker);
+      this.ticker = null;
+      this.running = false;
+      this.remaining = this.total;
+      this.root.classList.remove('finished');
+      this.render();
+      save();
+    }
+
+    tick() {
+      var left = Math.max(0, Math.ceil((this.endAt - Date.now()) / 1000));
+      if (left !== this.remaining) {
+        this.remaining = left;
+        this.render();
+        save();
+      }
+      if (left <= 0) this.complete();
+    }
+
+    complete() {
+      var self = this;
+      clearInterval(this.ticker);
+      this.ticker = null;
+      this.running = false;
+      this.remaining = 0;
+      sessionLog.unshift({ name: this.displayName(), seconds: this.total, at: Date.now() });
+      if (sessionLog.length > LOG_LIMIT) sessionLog.length = LOG_LIMIT;
+      totalSeconds += this.total;
+      completedCount += 1;
+      this.root.classList.add('finished');
+      setTimeout(function () { self.root.classList.remove('finished'); }, 6000);
+      this.render();
+      renderDashboard();
+      chime();
+      save();
+    }
+
+    render() {
+      var done = !this.running && this.remaining === 0;
+      var idle = !this.running && this.remaining === this.total;
+      var locked = this.isLocked();
+      this.el.display.textContent = formatClock(this.remaining);
+      this.el.display.classList.toggle('long', this.remaining >= 3600);
+      this.el.fill.style.transform = 'scaleX(' + (this.total > 0 ? (this.total - this.remaining) / this.total : 0) + ')';
+      this.root.classList.toggle('running', this.running);
+      this.el.status.textContent = this.running ? 'Running' : done ? 'Complete' : idle ? 'Ready' : 'Paused';
+      this.el.toggle.textContent = this.running ? 'Pause' : done ? 'Restart' : idle ? 'Start' : 'Resume';
+      this.el.minutes.disabled = locked;
+      this.presetButtons.forEach(function (btn) { btn.disabled = locked; });
+      if (!this.el.minutes.classList.contains('invalid')) {
+        this.el.hint.classList.remove('invalid');
+        this.el.hint.textContent = '= ' + formatDuration(this.total);
+      }
+      updateTitle();
+    }
+
+    toJSON() {
+      return {
+        name: this.el.name.value,
+        minutes: this.el.minutes.value,
+        total: this.total,
+        remaining: this.remaining,
+        running: this.running,
+        endAt: this.endAt
+      };
+    }
+
+    restore(data) {
+      var self = this;
+      if (!data || typeof data !== 'object') return;
+      if (typeof data.name === 'string') this.el.name.value = data.name.slice(0, 28);
+      if (typeof data.minutes === 'string') this.el.minutes.value = data.minutes.slice(0, 12);
+      var total = Number(data.total);
+      if (isFinite(total) && total >= 1 && total <= MAX_SECONDS) {
+        this.total = Math.round(total);
+      } else {
+        var parsed = parseMinutes(this.el.minutes.value);
+        if (parsed !== null) this.total = parsed;
+      }
+      var rem = Number(data.remaining);
+      if (!isFinite(rem) || rem < 0 || rem > this.total) rem = this.total;
+      this.remaining = Math.round(rem);
+      var endAt = Number(data.endAt);
+      if (data.running && isFinite(endAt)) {
+        var left = Math.ceil((endAt - Date.now()) / 1000);
+        if (left > 0 && left <= this.total) {
+          this.remaining = left;
+          this.endAt = endAt;
+          this.running = true;
+          this.ticker = setInterval(function () { self.tick(); }, 250);
+        } else {
+          this.remaining = this.total;
+        }
+      }
+      this.el.minutes.classList.remove('invalid');
+      this.render();
+    }
+  }
+
+  function renderDashboard() {
+    totalFocusEl.textContent = formatDuration(totalSeconds);
+    sessionCountEl.textContent = completedCount + (completedCount === 1 ? ' session' : ' sessions') + ' completed';
+    while (logListEl.firstChild) logListEl.removeChild(logListEl.firstChild);
+    if (sessionLog.length === 0) {
+      var empty = document.createElement('li');
+      empty.className = 'empty';
+      empty.textContent = 'No sessions yet. Finish a countdown and it will appear here.';
+      logListEl.appendChild(empty);
+      return;
+    }
+    sessionLog.forEach(function (entry) {
+      var li = document.createElement('li');
+      var name = document.createElement('span');
+      var dur = document.createElement('span');
+      var time = document.createElement('span');
+      name.className = 'log-name';
+      dur.className = 'log-dur';
+      time.className = 'log-time';
+      name.textContent = entry.name;
+      dur.textContent = formatDuration(entry.seconds);
+      time.textContent = new Date(entry.at).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+      li.appendChild(name);
+      li.appendChild(dur);
+      li.appendChild(time);
+      logListEl.appendChild(li);
+    });
+  }
+
+  function applySettings() {
+    var rootStyle = document.documentElement.style;
+    rootStyle.setProperty('--blur-intensity', settings.blur + 'px');
+    rootStyle.setProperty('--bg-color', settings.bg, 'important');
+    rootStyle.setProperty('--text-color', settings.text, 'important');
+    blurSlider.value = settings.blur;
+    blurValue.textContent = settings.blur + 'px';
+    bgPicker.value = settings.bg;
+    textPicker.value = settings.text;
+  }
+
+  function setPanel(open) {
+    panel.classList.toggle('active', open);
+    workspace.classList.toggle('panel-open', open);
+    panel.setAttribute('aria-hidden', String(!open));
+    toggleBtn.setAttribute('aria-expanded', String(open));
+  }
+
+  function pushBlur(e) {
+    document.documentElement.style.setProperty('--blur-intensity', e.target.value + 'px');
+    settings.blur = Number(e.target.value);
+    blurValue.textContent = e.target.value + 'px';
+    save();
+  }
+
+  function pushBackground(e) {
+    settings.bg = e.target.value;
+    document.documentElement.style.setProperty('--bg-color', settings.bg, 'important');
+    save();
+  }
+
+  function pushText(e) {
+    settings.text = e.target.value;
+    document.documentElement.style.setProperty('--text-color', settings.text, 'important');
+    save();
+  }
+
+  ['input', 'change'].forEach(function (evt) {
+    document.getElementById('blurSlider').addEventListener(evt, pushBlur);
+    document.getElementById('bgPicker').addEventListener(evt, pushBackground);
+    document.getElementById('textPicker').addEventListener(evt, pushText);
+  });
+
+  resetAppearanceBtn.addEventListener('click', function () {
+    settings.blur = DEFAULT_SETTINGS.blur;
+    settings.bg = DEFAULT_SETTINGS.bg;
+    settings.text = DEFAULT_SETTINGS.text;
+    applySettings();
+    save();
+  });
+
+  toggleBtn.addEventListener('click', function () {
+    setPanel(!panel.classList.contains('active'));
+  });
+
+  closeBtn.addEventListener('click', function () {
+    setPanel(false);
+    toggleBtn.focus();
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && panel.classList.contains('active')) {
+      setPanel(false);
+      toggleBtn.focus();
+    }
+  });
+
+  clearLogBtn.addEventListener('click', function () {
+    if (sessionLog.length === 0 && totalSeconds === 0) return;
+    if (window.confirm('Clear the session log and reset total focus time?')) {
+      sessionLog = [];
+      totalSeconds = 0;
+      completedCount = 0;
+      renderDashboard();
+      save();
+    }
+  });
+
+  window.addEventListener('beforeunload', save);
+
+  var saved = readSaved();
+
+  if (saved && saved.settings) {
+    var s = saved.settings;
+    var blur = Number(s.blur);
+    if (isFinite(blur) && blur >= 0 && blur <= 40) settings.blur = Math.round(blur);
+    if (typeof s.bg === 'string' && HEX.test(s.bg)) settings.bg = s.bg;
+    if (typeof s.text === 'string' && HEX.test(s.text)) settings.text = s.text;
+  }
+
+  if (saved && Array.isArray(saved.log)) {
+    sessionLog = saved.log.filter(function (entry) {
+      return entry && typeof entry.name === 'string' && isFinite(Number(entry.seconds)) && isFinite(Number(entry.at));
+    }).slice(0, LOG_LIMIT).map(function (entry) {
+      return { name: entry.name.slice(0, 28), seconds: Number(entry.seconds), at: Number(entry.at) };
+    });
+  }
+
+  if (saved) {
+    var savedTotal = Number(saved.totalSeconds);
+    var savedCount = Number(saved.completedCount);
+    totalSeconds = isFinite(savedTotal) && savedTotal > 0 ? Math.round(savedTotal) : 0;
+    completedCount = isFinite(savedCount) && savedCount > 0 ? Math.round(savedCount) : 0;
+  }
+
+  applySettings();
+
+  timers.a = new StudyTimer('a', document.querySelector('[data-timer="a"]'), { name: 'Past Paper', minutes: '45', fallback: 'Timer A' });
+  timers.b = new StudyTimer('b', document.querySelector('[data-timer="b"]'), { name: 'Relax', minutes: '15', fallback: 'Timer B' });
+
+  if (saved && saved.timers) {
+    timers.a.restore(saved.timers.a);
+    timers.b.restore(saved.timers.b);
+  }
+
+  renderDashboard();
+  updateTitle();
+  save();
+})();
+</script>
+</body>
+</html>
