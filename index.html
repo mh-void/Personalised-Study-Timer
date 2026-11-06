@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#030303">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23030303'/%3E%3Cg fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M26 5h12M32 5v7M49 16l4-4M32 19v4M51 36h-4M32 57v-4M13 36h4'/%3E%3Ccircle cx='32' cy='36' r='24'/%3E%3Cpath d='M32 41V18'/%3E%3C/g%3E%3Ccircle cx='32' cy='36' r='2.2' fill='%23ffffff'/%3E%3C/svg%3E">
 <title>Study Station</title>
 <style>
 :root {
@@ -13,7 +14,7 @@
   --text-muted: #a1a1a6 !important;
   --text-placeholder: #636366 !important;
   --card-bg: rgba(5, 6, 8, 0.75) !important;
-  --blur-intensity: 24px;
+  --blur-intensity: 40px;
   --surface: #0c0c0d;
   --surface-raised: #161618;
   --surface-pressed: #1d1d1f;
@@ -73,15 +74,75 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-#cursor-glow-shard {
+.ambient {
   position: fixed;
   top: 0;
   right: 0;
   bottom: 0;
   left: 0;
   z-index: 0;
+  overflow: hidden;
   pointer-events: none;
-  background: radial-gradient(circle 350px at var(--mouse-x, 0px) var(--mouse-y, 0px), rgba(147, 51, 234, 0.04), transparent 80%);
+  background:
+    radial-gradient(ellipse 68% 52% at 50% -10%, rgba(22, 24, 34, 0.46), transparent 68%),
+    radial-gradient(ellipse 46% 38% at 86% 78%, rgba(29, 18, 43, 0.24), transparent 72%);
+}
+
+.ambient__layer {
+  position: absolute;
+  top: -34%;
+  right: -34%;
+  bottom: -34%;
+  left: -34%;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  will-change: transform;
+}
+
+.ambient__layer--one {
+  background: radial-gradient(ellipse 52% 44% at 22% 24%, rgba(35, 52, 99, 0.34) 0%, rgba(6, 7, 17, 0.08) 48%, transparent 72%);
+  animation: drift-one 64s ease-in-out infinite alternate;
+}
+
+.ambient__layer--two {
+  background: radial-gradient(ellipse 44% 40% at 79% 20%, rgba(57, 37, 88, 0.3) 0%, rgba(9, 5, 20, 0.08) 48%, transparent 72%);
+  animation: drift-two 78s ease-in-out infinite alternate;
+}
+
+.ambient__layer--three {
+  background: radial-gradient(ellipse 62% 48% at 52% 96%, rgba(14, 30, 62, 0.32) 0%, rgba(3, 4, 6, 0.06) 52%, transparent 74%);
+  animation: drift-three 88s ease-in-out infinite alternate;
+}
+
+@keyframes drift-one {
+  0% { transform: translate3d(-2.5%, -1.5%, 0) scale(1); }
+  100% { transform: translate3d(2.8%, 2.4%, 0) scale(1.06); }
+}
+
+@keyframes drift-two {
+  0% { transform: translate3d(2%, -2%, 0) scale(1.03); }
+  100% { transform: translate3d(-2.6%, 2.2%, 0) scale(0.98); }
+}
+
+@keyframes drift-three {
+  0% { transform: translate3d(-1.5%, 2%, 0) scale(1.02); }
+  100% { transform: translate3d(2.4%, -1.6%, 0) scale(1.07); }
+}
+
+#cursor-glow-shard {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  width: 700px;
+  height: 700px;
+  margin: -350px 0 0 -350px;
+  pointer-events: none;
+  background: radial-gradient(circle 350px at center, rgba(147, 51, 234, 0.09), transparent 80%);
+  transform: translate3d(var(--mouse-x, 0px), var(--mouse-y, 0px), 0);
+  transition: transform 0.15s cubic-bezier(0.1, 0.8, 0.2, 1);
+  will-change: transform;
+  backface-visibility: hidden;
 }
 
 .workspace {
@@ -90,7 +151,7 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
   position: relative;
-  z-index: 1;
+  z-index: 2;
 }
 
 .main-content {
@@ -131,16 +192,16 @@ body {
 }
 
 .logo {
-  width: 56px;
-  height: 56px;
+  width: 40px;
+  height: 40px;
   display: block;
-  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.12));
 }
 
 .logo-sweep {
   transform-box: view-box;
   transform-origin: 32px 36px;
   animation: logoSweep 60s linear infinite;
+  will-change: transform;
 }
 
 @keyframes logoSweep {
@@ -252,10 +313,12 @@ input:focus-visible {
 .timer-card,
 .pomo,
 .panel-card {
+  position: relative;
+  z-index: 2;
   background: var(--card-bg) !important;
   border: 1px solid var(--hair) !important;
-  backdrop-filter: blur(var(--blur-intensity, 24px)) saturate(180%) !important;
-  -webkit-backdrop-filter: blur(var(--blur-intensity, 24px)) saturate(180%) !important;
+  backdrop-filter: blur(var(--blur-intensity, 40px)) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(var(--blur-intensity, 40px)) saturate(180%) !important;
   border-radius: 24px;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
@@ -280,7 +343,6 @@ input:focus-visible {
 }
 
 .pomo {
-  position: relative;
   display: grid;
   grid-template-columns: minmax(240px, 360px) minmax(0, 1fr);
   gap: 64px;
@@ -941,6 +1003,7 @@ input:focus-visible {
     transition-duration: 0.01s;
   }
 
+  .ambient__layer,
   .timer-card.finished,
   .pomo.finished,
   .logo-sweep {
@@ -950,41 +1013,30 @@ input:focus-visible {
 </style>
 </head>
 <body>
+<div class="ambient" aria-hidden="true">
+  <div class="ambient__layer ambient__layer--one"></div>
+  <div class="ambient__layer ambient__layer--two"></div>
+  <div class="ambient__layer ambient__layer--three"></div>
+</div>
 <div id="cursor-glow-shard" aria-hidden="true"></div>
 <div class="workspace" id="workspace">
   <main class="main-content" id="mainContent">
     <div class="content-wrap">
       <header class="top-bar">
         <div class="brand">
-          <svg class="logo" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Study Station stopwatch logo">
-            <defs>
-              <filter id="logoGlow" x="-40%" y="-40%" width="180%" height="180%">
-                <feGaussianBlur stdDeviation="1.6" result="blur"></feGaussianBlur>
-                <feMerge>
-                  <feMergeNode in="blur"></feMergeNode>
-                  <feMergeNode in="SourceGraphic"></feMergeNode>
-                </feMerge>
-              </filter>
-            </defs>
-            <rect x="26" y="2.5" width="12" height="5.5" rx="1.5" fill="none" stroke="#f5f5f7" stroke-width="1.5"></rect>
-            <line x1="32" y1="8" x2="32" y2="12" stroke="#f5f5f7" stroke-width="1.5" stroke-linecap="round"></line>
-            <line x1="49.5" y1="15.5" x2="53" y2="12" stroke="#f5f5f7" stroke-width="2" stroke-linecap="round"></line>
-            <circle cx="32" cy="36" r="24" fill="#030303" stroke="rgba(255,255,255,0.3)" stroke-width="1.25"></circle>
-            <circle cx="32" cy="36" r="20" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="2"></circle>
-            <circle cx="32" cy="36" r="20" fill="none" stroke="#f5f5f7" stroke-width="2" stroke-linecap="round" stroke-dasharray="94 32" transform="rotate(-90 32 36)" filter="url(#logoGlow)"></circle>
-            <g stroke="#f5f5f7" stroke-width="1.2" stroke-linecap="round" opacity="0.7">
-              <line x1="32" y1="18" x2="32" y2="20.5"></line>
-              <line x1="50" y1="36" x2="47.5" y2="36"></line>
-              <line x1="32" y1="54" x2="32" y2="51.5"></line>
-              <line x1="14" y1="36" x2="16.5" y2="36"></line>
+          <svg class="logo" width="40" height="40" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Study Station stopwatch logo">
+            <g stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M25 3h14"></path>
+              <path d="M32 3v9"></path>
+              <path d="M50 18l5-5"></path>
+              <circle cx="32" cy="36" r="24"></circle>
+              <path d="M32 15v3M53 36h-3M32 57v-3M11 36h3"></path>
             </g>
-            <polygon points="32,22.5 33.4,36 30.6,36" fill="#ffffff"></polygon>
-            <polygon points="32,28 33.3,36 30.7,36" fill="#ffffff" transform="rotate(115 32 36)"></polygon>
             <g class="logo-sweep">
-              <line x1="32" y1="41" x2="32" y2="21.5" stroke="#f5f5f7" stroke-width="1.1" stroke-linecap="round" opacity="0.85"></line>
+              <path d="M32 41V18" stroke="#ffffff" stroke-width="2" stroke-linecap="round"></path>
+              <circle cx="32" cy="18" r="1.5" fill="#ffffff"></circle>
             </g>
-            <circle cx="32" cy="36" r="2.2" fill="#f5f5f7"></circle>
-            <circle cx="32" cy="36" r="0.8" fill="#030303"></circle>
+            <circle cx="32" cy="36" r="2.2" fill="#ffffff"></circle>
           </svg>
           <div>
             <h1 class="app-title">Study Station</h1>
@@ -1124,8 +1176,8 @@ input:focus-visible {
     </div>
 
     <div class="setting">
-      <div class="setting-label"><label for="blurSlider">Glass blur</label><output id="blurValue" for="blurSlider">24px</output></div>
-      <input type="range" id="blurSlider" min="0" max="40" step="1" value="24">
+      <div class="setting-label"><label for="blurSlider">Glass blur</label><output id="blurValue" for="blurSlider">40px</output></div>
+      <input type="range" id="blurSlider" min="0" max="40" step="1" value="40">
     </div>
 
     <div class="setting">
@@ -1151,7 +1203,7 @@ input:focus-visible {
   var STORE_KEY = 'studyStation.v1';
   var MAX_SECONDS = 36000;
   var LOG_LIMIT = 100;
-  var DEFAULT_SETTINGS = { blur: 24, bg: '#030303', text: '#ffffff' };
+  var DEFAULT_SETTINGS = { blur: 40, bg: '#030303', text: '#ffffff' };
   var LEGACY_BGS = ['#0b0c10', '#050608'];
   var LEGACY_BLUR = 12;
   var HEX = /^#[0-9a-fA-F]{6}$/;
@@ -2023,7 +2075,7 @@ input:focus-visible {
   document.addEventListener('keydown', function (e) {
     if (e.ctrlKey || e.metaKey || e.altKey || e.repeat) return;
     var tag = e.target && e.target.tagName;
-    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || tag === 'BUTTON') return;
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || (e.target && e.target.isContentEditable)) return;
     if (e.code === 'Space') {
       e.preventDefault();
       pomo.toggle();
@@ -2036,40 +2088,49 @@ input:focus-visible {
 
   (function trackCursorGlow() {
     var shard = document.getElementById('cursor-glow-shard');
-    var pointerX = 0;
-    var pointerY = 0;
+    if (!shard) return;
+    var targetX = window.innerWidth / 2;
+    var targetY = window.innerHeight / 3;
+    var currentX = targetX;
+    var currentY = targetY;
     var hasPointer = false;
     var frameQueued = false;
 
-    function paintShard() {
+    function paint() {
       frameQueued = false;
-      shard.style.setProperty('--mouse-x', pointerX + 'px');
-      shard.style.setProperty('--mouse-y', pointerY + 'px');
+      currentX += (targetX - currentX) * 0.34;
+      currentY += (targetY - currentY) * 0.34;
+      if (Math.abs(targetX - currentX) < 0.08) currentX = targetX;
+      if (Math.abs(targetY - currentY) < 0.08) currentY = targetY;
+      shard.style.setProperty('--mouse-x', currentX.toFixed(2) + 'px');
+      shard.style.setProperty('--mouse-y', currentY.toFixed(2) + 'px');
+      if (currentX !== targetX || currentY !== targetY) queuePaint();
     }
 
     function queuePaint() {
       if (frameQueued) return;
       frameQueued = true;
-      requestAnimationFrame(paintShard);
+      requestAnimationFrame(paint);
     }
 
-    function restPosition() {
-      if (hasPointer) return;
-      pointerX = window.innerWidth / 2;
-      pointerY = window.innerHeight / 3;
-      queuePaint();
-    }
+    shard.style.setProperty('--mouse-x', currentX.toFixed(2) + 'px');
+    shard.style.setProperty('--mouse-y', currentY.toFixed(2) + 'px');
 
     window.addEventListener('mousemove', function (e) {
       if (!hasPointer && e.clientX === 0 && e.clientY === 0) return;
       hasPointer = true;
-      pointerX = e.clientX;
-      pointerY = e.clientY;
+      targetX = e.clientX;
+      targetY = e.clientY;
       queuePaint();
     }, { passive: true });
 
-    window.addEventListener('resize', restPosition);
-    restPosition();
+    window.addEventListener('resize', function () {
+      if (!hasPointer) {
+        targetX = window.innerWidth / 2;
+        targetY = window.innerHeight / 3;
+        queuePaint();
+      }
+    });
   })();
 
   renderDashboard();
