@@ -3,19 +3,27 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#030303">
 <title>Study Station</title>
 <style>
 :root {
-  --bg-color: #0b0c10 !important;
+  --bg-color: #030303 !important;
   --text-color: #ffffff !important;
-  --text-muted: #a0a5b5 !important;
-  --text-placeholder: #2f333e !important;
-  --card-bg: rgba(255, 255, 255, 0.02) !important;
-  --blur-intensity: 12px;
-  --accent: #8ea2ff;
-  --line: rgba(255, 255, 255, 0.07);
+  --text-muted: #a1a1a6 !important;
+  --text-placeholder: #636366 !important;
+  --card-bg: rgba(5, 6, 8, 0.75) !important;
+  --blur-intensity: 24px;
+  --surface: #0c0c0d;
+  --surface-raised: #161618;
+  --surface-pressed: #1d1d1f;
+  --hair: rgba(255, 255, 255, 0.06);
+  --hair-soft: rgba(255, 255, 255, 0.04);
+  --hair-strong: rgba(255, 255, 255, 0.14);
+  --accent: #f5f5f7;
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
   --panel-width: 340px;
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI Variable Display", "Segoe UI", system-ui, sans-serif;
 }
 
 *, *::before, *::after {
@@ -24,11 +32,12 @@
 
 html {
   overflow-y: scroll;
+  color-scheme: dark;
 }
 
 @supports not selector(::-webkit-scrollbar) {
   html {
-    scrollbar-color: rgba(255, 255, 255, 0.2) #0b0c10;
+    scrollbar-color: rgba(255, 255, 255, 0.2) #030303;
     scrollbar-width: auto;
   }
 }
@@ -55,27 +64,24 @@ body {
   margin: 0;
   min-height: 100vh;
   background-color: var(--bg-color) !important;
-  background-image: radial-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-  background-size: 30px 30px;
   color: var(--text-color);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  -webkit-font-smoothing: antialiased;
+  font-family: var(--font);
+  font-size: 16px;
   line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
-body::before {
-  content: '';
+#cursor-glow-shard {
   position: fixed;
   top: 0;
   right: 0;
   bottom: 0;
   left: 0;
-  z-index: -1;
+  z-index: 0;
   pointer-events: none;
-  background:
-    radial-gradient(circle at 22% 28%, rgba(142, 162, 255, 0.16), transparent 42%),
-    radial-gradient(circle at 78% 72%, rgba(142, 162, 255, 0.1), transparent 46%),
-    repeating-radial-gradient(circle at 50% 45%, transparent 0 58px, rgba(255, 255, 255, 0.06) 58px 59px);
+  background: radial-gradient(circle 350px at var(--mouse-x, 0px) var(--mouse-y, 0px), rgba(147, 51, 234, 0.04), transparent 80%);
 }
 
 .workspace {
@@ -84,6 +90,7 @@ body::before {
   min-height: 100vh;
   overflow-x: hidden;
   position: relative;
+  z-index: 1;
 }
 
 .main-content {
@@ -91,12 +98,12 @@ body::before {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  padding: 3rem 2rem 6rem;
+  padding: 48px 32px 96px;
   transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .workspace.panel-open .main-content {
-  padding-right: calc(var(--panel-width) + 2rem);
+  padding-right: calc(var(--panel-width) + 32px);
 }
 
 .content-wrap {
@@ -105,133 +112,491 @@ body::before {
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 2.5rem;
+  gap: 48px;
 }
 
 .top-bar {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
-  gap: 1.5rem;
+  gap: 24px;
   flex-wrap: wrap;
+}
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
+}
+
+.logo {
+  width: 56px;
+  height: 56px;
+  display: block;
+  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.12));
+}
+
+.logo-sweep {
+  transform-box: view-box;
+  transform-origin: 32px 36px;
+  animation: logoSweep 60s linear infinite;
+}
+
+@keyframes logoSweep {
+  to { transform: rotate(360deg); }
 }
 
 .app-title {
   margin: 0;
-  font-size: 1.5rem;
-  font-weight: 300;
-  letter-spacing: 0.02em;
+  font-size: 1.75rem;
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
 }
 
 .app-sub {
-  margin: 0.25rem 0 0;
-  font-size: 0.9rem;
+  margin: 8px 0 0;
+  font-size: 0.9375rem;
+  line-height: 1.5;
   color: var(--text-muted);
+}
+
+.block {
+  display: flex;
+  flex-direction: column;
+}
+
+.section-label {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 0 0 24px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 16px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--hair-soft);
 }
 
 .btn {
   appearance: none;
   font: inherit;
-  font-size: 0.95rem;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  line-height: 24px;
   color: var(--text-color);
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--surface);
+  border: 1px solid var(--hair);
   border-radius: 999px;
-  padding: 0.8rem 1.6rem;
+  padding: 12px 24px;
   cursor: pointer;
-  transition: transform 0.25s var(--ease), background 0.25s var(--ease), border-color 0.25s var(--ease), opacity 0.25s var(--ease);
+  transition: background 0.2s var(--ease), border-color 0.2s var(--ease), color 0.2s var(--ease), opacity 0.2s var(--ease);
 }
 
 .btn:hover {
-  background: rgba(255, 255, 255, 0.09);
-  border-color: rgba(255, 255, 255, 0.2);
-  transform: translateY(-1px);
+  background: var(--surface-raised);
+  border-color: var(--hair-strong);
 }
 
 .btn:active {
-  transform: translateY(0) scale(0.98);
+  background: var(--surface-pressed);
 }
 
 .btn:focus-visible,
 .chip:focus-visible,
+.mode-tab:focus-visible,
 input:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 3px;
+  outline: 2px solid rgba(255, 255, 255, 0.6);
+  outline-offset: 2px;
 }
 
 .btn-primary {
   background: var(--text-color);
   color: var(--bg-color);
   border-color: transparent;
-  min-width: 8rem;
-  font-weight: 500;
+  min-width: 128px;
 }
 
 .btn-primary:hover {
   background: var(--text-color);
-  opacity: 0.88;
+  border-color: transparent;
+  opacity: 0.86;
+}
+
+.btn-primary:active {
+  background: var(--text-color);
+  opacity: 0.74;
 }
 
 .btn-small {
-  padding: 0.4rem 1rem;
-  font-size: 0.8rem;
+  padding: 8px 16px;
+  font-size: 0.8125rem;
+  line-height: 16px;
 }
 
 .btn:disabled,
 .chip:disabled {
   opacity: 0.35;
   cursor: not-allowed;
-  transform: none;
+}
+
+.timer-card,
+.pomo,
+.panel-card {
+  background: var(--card-bg) !important;
+  border: 1px solid var(--hair) !important;
+  backdrop-filter: blur(var(--blur-intensity, 24px)) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(var(--blur-intensity, 24px)) saturate(180%) !important;
+  border-radius: 24px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.timer-card.running,
+.pomo.running {
+  border-color: var(--hair-strong) !important;
+}
+
+@keyframes finishPulse {
+  0%, 100% { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 0 0 0 rgba(255, 255, 255, 0); }
+  50% { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 0 0 6px rgba(255, 255, 255, 0.07); }
+}
+
+.timer-card.finished,
+.pomo.finished {
+  animation: finishPulse 1.4s ease-in-out 4;
+}
+
+.pomo-shell {
+  container-type: inline-size;
+}
+
+.pomo {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(240px, 360px) minmax(0, 1fr);
+  gap: 64px;
+  align-items: center;
+  padding: 48px 40px;
+  overflow: hidden;
+}
+
+.ring-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 340px;
+  aspect-ratio: 1 / 1;
+  margin: 0 auto;
+  container-type: inline-size;
+}
+
+.ring {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+}
+
+.ring-ticks line {
+  stroke: rgba(255, 255, 255, 0.12);
+  stroke-width: 1;
+}
+
+.ring-ticks line.major {
+  stroke: rgba(255, 255, 255, 0.3);
+}
+
+.ring-track {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.08);
+  stroke-width: 3;
+}
+
+.ring-bar {
+  fill: none;
+  stroke: var(--text-color);
+  stroke-width: 3;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.25s linear;
+}
+
+.ring-center {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 13%;
+  text-align: center;
+}
+
+.ring-mode {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  line-height: 16px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.ring-time {
+  font-weight: 200;
+  font-size: clamp(2.4rem, 24cqi, 5rem);
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.ring-time.long {
+  font-size: clamp(1.8rem, 17cqi, 3.6rem);
+}
+
+.ring-status {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  line-height: 16px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.pomo-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-width: 0;
+}
+
+.mode-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid var(--hair);
+  border-radius: 16px;
+  background: var(--surface);
+}
+
+.mode-tab {
+  appearance: none;
+  font: inherit;
+  color: var(--text-muted);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  padding: 12px 8px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+  text-align: center;
+  min-width: 0;
+  transition: color 0.2s var(--ease), background 0.2s var(--ease), border-color 0.2s var(--ease);
+}
+
+.mode-tab:hover {
+  color: var(--text-color);
+  background: var(--surface-raised);
+}
+
+.mode-tab.active {
+  color: var(--text-color);
+  background: var(--surface-raised);
+  border-color: var(--hair-strong);
+}
+
+.tab-name {
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 20px;
+}
+
+.tab-meta {
+  font-size: 0.6875rem;
+  line-height: 16px;
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.7;
+}
+
+.pomo .controls {
+  justify-content: flex-start;
+  margin-top: 0;
+}
+
+.controls {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.dur-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.dur-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  line-height: 16px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  min-width: 0;
+}
+
+.dur-field .minutes-input {
+  width: 100%;
+  font-size: 0.9375rem;
+  letter-spacing: 0;
+}
+
+.dur-hint {
+  min-height: 16px;
+  margin-top: -16px;
+  font-size: 0.75rem;
+  line-height: 16px;
+  color: #ff8b8b;
+}
+
+.cycle-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  font-size: 0.8125rem;
+  line-height: 24px;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+}
+
+.dots {
+  display: flex;
+  gap: 8px;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 1px solid var(--hair-strong);
+  transition: background 0.3s var(--ease), border-color 0.3s var(--ease);
+}
+
+.dot.on {
+  background: var(--text-color);
+  border-color: var(--text-color);
+}
+
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  font-size: 0.875rem;
+  line-height: 24px;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color 0.2s var(--ease);
+}
+
+.toggle:hover {
+  color: var(--text-color);
+}
+
+.toggle input {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: #f5f5f7;
+}
+
+.hotkeys {
+  margin: 0;
+  font-size: 0.75rem;
+  line-height: 16px;
+  letter-spacing: 0.02em;
+  color: var(--text-muted);
+  opacity: 0.7;
+}
+
+@container (max-width: 700px) {
+  .pomo {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 32px;
+    padding: 32px 24px;
+  }
+}
+
+@container (max-width: 480px) {
+  .dur-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .mode-tabs {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 .timers {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
-  gap: 2rem;
+  gap: 24px;
 }
 
 .timer-card {
-  background: var(--card-bg) !important;
-  border: 1px solid rgba(255, 255, 255, 0.05) !important;
-  backdrop-filter: blur(var(--blur-intensity, 12px)) !important;
-  -webkit-backdrop-filter: blur(var(--blur-intensity, 12px)) !important;
-  border-radius: 24px;
-  padding: 3rem 2rem;
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
   container-type: inline-size;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.25rem;
+  gap: 24px;
+  padding: 48px 32px;
   min-width: 0;
-  transition: border-color 0.5s var(--ease);
-}
-
-.timer-card.running {
-  border-color: rgba(142, 162, 255, 0.35) !important;
-}
-
-@keyframes finishPulse {
-  0%, 100% { box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4), 0 0 0 0 rgba(142, 162, 255, 0); }
-  50% { box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4), 0 0 0 6px rgba(142, 162, 255, 0.28); }
-}
-
-.timer-card.finished {
-  animation: finishPulse 1.4s ease-in-out 4;
+  transition: border-color 0.4s var(--ease);
 }
 
 .name-input {
   width: 100%;
-  max-width: 18rem;
+  max-width: 288px;
   background: transparent;
   border: 0;
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid var(--hair);
+  border-radius: 0;
   color: var(--text-color);
   font: inherit;
-  font-size: 1.05rem;
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 24px;
   text-align: center;
-  letter-spacing: 0.04em;
-  padding: 0.35rem 0.5rem;
+  letter-spacing: 0.01em;
+  padding: 8px;
+  transition: border-color 0.2s var(--ease);
+}
+
+.name-input:hover,
+.name-input:focus {
+  border-bottom-color: var(--hair-strong);
 }
 
 .name-input::placeholder,
@@ -240,24 +605,25 @@ input:focus-visible {
 }
 
 .status {
-  font-size: 0.72rem;
-  letter-spacing: 0.22em;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  line-height: 16px;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--text-muted);
-  min-height: 1.1em;
+  min-height: 16px;
 }
 
 .time-display {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  font-weight: 100;
-  letter-spacing: -3px;
-  font-size: clamp(5rem, 12vw, 8rem);
+  font-family: var(--font);
+  font-weight: 200;
+  letter-spacing: -0.04em;
   font-size: clamp(3rem, 31cqi, 8rem);
   font-variant-numeric: tabular-nums;
   line-height: 1;
   white-space: nowrap;
   color: var(--text-color);
-  margin: 0.25rem 0;
+  margin: 8px 0;
 }
 
 .time-display.long {
@@ -281,37 +647,38 @@ input:focus-visible {
   transition: transform 0.4s linear;
 }
 
-.controls {
-  display: flex;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-  justify-content: center;
-  margin-top: 0.5rem;
-}
-
 .minutes-row {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.75rem;
+  gap: 16px;
   flex-wrap: wrap;
-  font-size: 0.85rem;
+  font-size: 0.875rem;
+  line-height: 24px;
   color: var(--text-muted);
 }
 
 .minutes-input {
-  width: 5.5rem;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid var(--line);
+  width: 88px;
+  background: var(--surface);
+  border: 1px solid var(--hair);
   border-radius: 12px;
   color: var(--text-color);
   font: inherit;
+  font-size: 0.9375rem;
+  line-height: 24px;
+  font-variant-numeric: tabular-nums;
   text-align: center;
-  padding: 0.5rem 0.5rem;
+  padding: 8px;
+  transition: border-color 0.2s var(--ease), background 0.2s var(--ease);
+}
+
+.minutes-input:hover:not(:disabled) {
+  border-color: var(--hair-strong);
 }
 
 .minutes-input.invalid {
-  border-color: #ff6b7a;
+  border-color: rgba(255, 139, 139, 0.7);
 }
 
 .minutes-input:disabled {
@@ -319,18 +686,18 @@ input:focus-visible {
 }
 
 .hint {
-  min-width: 4.5rem;
-  font-size: 0.8rem;
+  min-width: 72px;
+  font-size: 0.8125rem;
   color: var(--text-muted);
 }
 
 .hint.invalid {
-  color: #ff8b97;
+  color: #ff8b8b;
 }
 
 .presets {
   display: flex;
-  gap: 0.5rem;
+  gap: 8px;
   flex-wrap: wrap;
   justify-content: center;
 }
@@ -338,61 +705,59 @@ input:focus-visible {
 .chip {
   appearance: none;
   font: inherit;
-  font-size: 0.8rem;
+  font-size: 0.8125rem;
+  line-height: 16px;
   color: var(--text-muted);
   background: transparent;
-  border: 1px solid var(--line);
+  border: 1px solid var(--hair);
   border-radius: 999px;
-  padding: 0.4rem 0.9rem;
+  padding: 8px 16px;
   cursor: pointer;
-  transition: all 0.25s var(--ease);
+  transition: color 0.2s var(--ease), background 0.2s var(--ease), border-color 0.2s var(--ease);
 }
 
 .chip:hover:not(:disabled) {
   color: var(--text-color);
-  border-color: rgba(255, 255, 255, 0.25);
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--surface-raised);
+  border-color: var(--hair-strong);
 }
 
 .dashboard {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
-  gap: 2rem;
-  margin-bottom: 4rem;
+  gap: 24px;
+  margin-bottom: 64px;
 }
 
 .panel-card {
-  background: var(--card-bg) !important;
-  border: 1px solid rgba(255, 255, 255, 0.05) !important;
-  backdrop-filter: blur(var(--blur-intensity, 12px)) !important;
-  -webkit-backdrop-filter: blur(var(--blur-intensity, 12px)) !important;
-  border-radius: 24px;
-  padding: 2rem;
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+  padding: 32px;
   min-width: 0;
 }
 
 .panel-card h2 {
   margin: 0;
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   font-weight: 500;
-  letter-spacing: 0.2em;
+  line-height: 16px;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--text-muted);
 }
 
 .total-value {
-  margin-top: 1.25rem;
-  font-size: clamp(2rem, 4vw, 3rem);
+  margin-top: 24px;
+  font-size: clamp(2.5rem, 4.5vw, 3.5rem);
   font-weight: 200;
-  letter-spacing: -1px;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
   line-height: 1.1;
   word-break: break-word;
 }
 
 .total-sub {
-  margin-top: 0.5rem;
-  font-size: 0.85rem;
+  margin-top: 8px;
+  font-size: 0.875rem;
+  line-height: 24px;
   color: var(--text-muted);
 }
 
@@ -400,14 +765,14 @@ input:focus-visible {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 1rem;
+  gap: 16px;
+  margin-bottom: 16px;
 }
 
 .log-list {
   list-style: none;
   margin: 0;
-  padding: 0 0.5rem 0 0;
+  padding: 0 8px 0 0;
   max-height: 280px;
   overflow-y: auto;
   scrollbar-width: thin;
@@ -417,11 +782,12 @@ input:focus-visible {
 .log-list li {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto auto;
-  gap: 1rem;
+  gap: 16px;
   align-items: baseline;
-  padding: 0.75rem 0;
-  border-bottom: 1px solid var(--line);
-  font-size: 0.95rem;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--hair-soft);
+  font-size: 0.9375rem;
+  line-height: 24px;
 }
 
 .log-list li:last-child {
@@ -439,14 +805,14 @@ input:focus-visible {
 }
 
 .log-time {
-  font-size: 0.8rem;
+  font-size: 0.8125rem;
   color: var(--text-muted);
 }
 
 .log-list li.empty {
   display: block;
   color: var(--text-muted);
-  font-size: 0.9rem;
+  font-size: 0.9375rem;
   border-bottom: 0;
 }
 
@@ -457,12 +823,12 @@ input:focus-visible {
   top: 0;
   right: -340px;
   height: 100vh;
-  background-color: rgba(11, 12, 16, 0.99);
-  border-left: 1px solid rgba(255, 255, 255, 0.04);
+  background-color: var(--surface);
+  border-left: 1px solid var(--hair);
   z-index: 999;
   transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
   visibility: hidden;
-  padding: 2rem 1.75rem;
+  padding: 32px 24px;
   overflow-y: auto;
   color: #ffffff;
 }
@@ -470,43 +836,45 @@ input:focus-visible {
 .settings-panel.active {
   right: 0;
   visibility: visible;
-  box-shadow: -30px 0 60px rgba(0, 0, 0, 0.35);
+  box-shadow: -24px 0 48px rgba(0, 0, 0, 0.5);
 }
 
 .settings-panel .btn {
   color: #ffffff;
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--surface-raised);
 }
 
 .settings-panel .btn:hover {
-  background: rgba(255, 255, 255, 0.12);
+  background: var(--surface-pressed);
 }
 
 .panel-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 2rem;
+  margin-bottom: 32px;
 }
 
 .panel-head h2 {
   margin: 0;
-  font-size: 1.15rem;
-  font-weight: 300;
-  letter-spacing: 0.03em;
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 24px;
+  letter-spacing: -0.01em;
 }
 
 .setting {
-  margin-bottom: 1.75rem;
+  margin-bottom: 24px;
 }
 
 .setting-label {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  font-size: 0.85rem;
-  color: #a0a5b5;
-  margin-bottom: 0.65rem;
+  font-size: 0.8125rem;
+  line-height: 16px;
+  color: #a1a1a6;
+  margin-bottom: 8px;
 }
 
 .setting-label output {
@@ -516,44 +884,41 @@ input:focus-visible {
 
 .settings-panel input[type="range"] {
   width: 100%;
-  accent-color: #8ea2ff;
+  accent-color: #f5f5f7;
 }
 
 .settings-panel input[type="color"] {
   width: 100%;
-  height: 2.6rem;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  height: 40px;
+  background: var(--surface-raised);
+  border: 1px solid var(--hair);
   border-radius: 12px;
-  padding: 0.25rem;
+  padding: 4px;
   cursor: pointer;
 }
 
 .panel-note {
-  margin: 2rem 0 0;
-  font-size: 0.8rem;
-  color: #a0a5b5;
+  margin: 32px 0 0;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: #a1a1a6;
 }
 
 @media (max-width: 900px) {
-  .workspace.panel-open .main-content {
-    padding-right: 2rem;
-  }
-
   .dashboard {
     grid-template-columns: minmax(0, 1fr);
   }
 
   .main-content {
-    padding: 2rem 1rem 6rem;
+    padding: 32px 16px 96px;
   }
 
   .workspace.panel-open .main-content {
-    padding-right: 1rem;
+    padding-right: 16px;
   }
 
   .timer-card {
-    padding: 2.5rem 1.5rem;
+    padding: 40px 24px;
   }
 }
 
@@ -569,29 +934,127 @@ input:focus-visible {
   .main-content,
   .settings-panel,
   .progress-fill,
+  .ring-bar,
   .btn,
-  .chip {
+  .chip,
+  .mode-tab {
     transition-duration: 0.01s;
   }
 
-  .timer-card.finished {
+  .timer-card.finished,
+  .pomo.finished,
+  .logo-sweep {
     animation: none;
   }
 }
 </style>
 </head>
 <body>
+<div id="cursor-glow-shard" aria-hidden="true"></div>
 <div class="workspace" id="workspace">
   <main class="main-content" id="mainContent">
     <div class="content-wrap">
       <header class="top-bar">
-        <div>
-          <h1 class="app-title">Study Station</h1>
-          <p class="app-sub">Two independent timers for O3 and A-Level past paper sessions</p>
+        <div class="brand">
+          <svg class="logo" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Study Station stopwatch logo">
+            <defs>
+              <filter id="logoGlow" x="-40%" y="-40%" width="180%" height="180%">
+                <feGaussianBlur stdDeviation="1.6" result="blur"></feGaussianBlur>
+                <feMerge>
+                  <feMergeNode in="blur"></feMergeNode>
+                  <feMergeNode in="SourceGraphic"></feMergeNode>
+                </feMerge>
+              </filter>
+            </defs>
+            <rect x="26" y="2.5" width="12" height="5.5" rx="1.5" fill="none" stroke="#f5f5f7" stroke-width="1.5"></rect>
+            <line x1="32" y1="8" x2="32" y2="12" stroke="#f5f5f7" stroke-width="1.5" stroke-linecap="round"></line>
+            <line x1="49.5" y1="15.5" x2="53" y2="12" stroke="#f5f5f7" stroke-width="2" stroke-linecap="round"></line>
+            <circle cx="32" cy="36" r="24" fill="#030303" stroke="rgba(255,255,255,0.3)" stroke-width="1.25"></circle>
+            <circle cx="32" cy="36" r="20" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="2"></circle>
+            <circle cx="32" cy="36" r="20" fill="none" stroke="#f5f5f7" stroke-width="2" stroke-linecap="round" stroke-dasharray="94 32" transform="rotate(-90 32 36)" filter="url(#logoGlow)"></circle>
+            <g stroke="#f5f5f7" stroke-width="1.2" stroke-linecap="round" opacity="0.7">
+              <line x1="32" y1="18" x2="32" y2="20.5"></line>
+              <line x1="50" y1="36" x2="47.5" y2="36"></line>
+              <line x1="32" y1="54" x2="32" y2="51.5"></line>
+              <line x1="14" y1="36" x2="16.5" y2="36"></line>
+            </g>
+            <polygon points="32,22.5 33.4,36 30.6,36" fill="#ffffff"></polygon>
+            <polygon points="32,28 33.3,36 30.7,36" fill="#ffffff" transform="rotate(115 32 36)"></polygon>
+            <g class="logo-sweep">
+              <line x1="32" y1="41" x2="32" y2="21.5" stroke="#f5f5f7" stroke-width="1.1" stroke-linecap="round" opacity="0.85"></line>
+            </g>
+            <circle cx="32" cy="36" r="2.2" fill="#f5f5f7"></circle>
+            <circle cx="32" cy="36" r="0.8" fill="#030303"></circle>
+          </svg>
+          <div>
+            <h1 class="app-title">Study Station</h1>
+            <p class="app-sub">Focus core and dual timers for O3 and A-Level past paper grinds</p>
+          </div>
         </div>
         <button class="btn" id="settingsToggle" type="button" aria-expanded="false" aria-controls="settingsPanel">Settings</button>
       </header>
 
+      <section class="block" aria-label="Focus core">
+        <h2 class="section-label">Focus Core</h2>
+        <div class="pomo-shell">
+          <div class="pomo" id="pomo" data-mode="focus">
+            <div class="ring-wrap">
+              <svg class="ring" viewBox="0 0 300 300" aria-hidden="true">
+                <circle class="ring-track" cx="150" cy="150" r="130"></circle>
+                <circle class="ring-bar" data-role="ring" cx="150" cy="150" r="130" transform="rotate(-90 150 150)"></circle>
+              </svg>
+              <div class="ring-center">
+                <div class="ring-mode" data-role="modeLabel">Deep Study Grind</div>
+                <div class="ring-time" data-role="display" role="timer" aria-label="Focus core countdown">25:00</div>
+                <div class="ring-status" data-role="status">Ready</div>
+              </div>
+            </div>
+
+            <div class="pomo-panel">
+              <div class="mode-tabs" role="group" aria-label="Session mode">
+                <button class="mode-tab" type="button" data-mode="focus"><span class="tab-name">Deep Study Grind</span><span class="tab-meta" data-meta="focus"></span></button>
+                <button class="mode-tab" type="button" data-mode="short"><span class="tab-name">Short Recovery Break</span><span class="tab-meta" data-meta="short"></span></button>
+                <button class="mode-tab" type="button" data-mode="long"><span class="tab-name">Long Brain Rest</span><span class="tab-meta" data-meta="long"></span></button>
+              </div>
+
+              <div class="controls">
+                <button class="btn btn-primary" type="button" data-role="toggle">Start</button>
+                <button class="btn" type="button" data-role="reset">Reset</button>
+                <button class="btn" type="button" data-role="skip">Skip</button>
+              </div>
+
+              <div class="dur-grid">
+                <label class="dur-field" for="durFocus">Grind (min)
+                  <input class="minutes-input" id="durFocus" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" placeholder="25" data-dur="focus">
+                </label>
+                <label class="dur-field" for="durShort">Break (min)
+                  <input class="minutes-input" id="durShort" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" placeholder="5" data-dur="short">
+                </label>
+                <label class="dur-field" for="durLong">Rest (min)
+                  <input class="minutes-input" id="durLong" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" placeholder="15" data-dur="long">
+                </label>
+              </div>
+              <div class="dur-hint" data-role="durHint" aria-live="polite"></div>
+
+              <div class="cycle-row">
+                <div class="dots" data-role="dots" aria-hidden="true"></div>
+                <span data-role="roundLabel">Round 1 of 4</span>
+                <button class="btn btn-small" type="button" data-role="newCycle">New cycle</button>
+              </div>
+
+              <label class="toggle">
+                <input type="checkbox" data-role="auto">
+                Auto-start the next phase
+              </label>
+
+              <p class="hotkeys">Space start / pause &middot; 1 2 3 switch mode &middot; N skip</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="block">
+      <h2 class="section-label">Dual Timers</h2>
       <section class="timers" aria-label="Timers">
         <article class="timer-card" data-timer="a">
           <input class="name-input" type="text" maxlength="28" spellcheck="false" autocomplete="off" placeholder="Timer A" aria-label="Name of timer A" data-role="name">
@@ -635,6 +1098,7 @@ input:focus-visible {
           </div>
         </article>
       </section>
+      </div>
 
       <section class="dashboard" aria-label="Session metrics">
         <div class="panel-card">
@@ -660,13 +1124,13 @@ input:focus-visible {
     </div>
 
     <div class="setting">
-      <div class="setting-label"><label for="blurSlider">Glass blur</label><output id="blurValue" for="blurSlider">12px</output></div>
-      <input type="range" id="blurSlider" min="0" max="40" step="1" value="12">
+      <div class="setting-label"><label for="blurSlider">Glass blur</label><output id="blurValue" for="blurSlider">24px</output></div>
+      <input type="range" id="blurSlider" min="0" max="40" step="1" value="24">
     </div>
 
     <div class="setting">
       <div class="setting-label"><label for="bgPicker">Background colour</label></div>
-      <input type="color" id="bgPicker" value="#0b0c10">
+      <input type="color" id="bgPicker" value="#030303">
     </div>
 
     <div class="setting">
@@ -687,8 +1151,18 @@ input:focus-visible {
   var STORE_KEY = 'studyStation.v1';
   var MAX_SECONDS = 36000;
   var LOG_LIMIT = 100;
-  var DEFAULT_SETTINGS = { blur: 12, bg: '#0b0c10', text: '#ffffff' };
+  var DEFAULT_SETTINGS = { blur: 24, bg: '#030303', text: '#ffffff' };
+  var LEGACY_BGS = ['#0b0c10', '#050608'];
+  var LEGACY_BLUR = 12;
   var HEX = /^#[0-9a-fA-F]{6}$/;
+  var POMO_ROUNDS = 4;
+  var POMO_MODES = {
+    focus: { label: 'Deep Study Grind', fallback: 25, key: '1' },
+    short: { label: 'Short Recovery Break', fallback: 5, key: '2' },
+    long: { label: 'Long Brain Rest', fallback: 15, key: '3' }
+  };
+  var RING_RADIUS = 130;
+  var RING_LENGTH = 2 * Math.PI * RING_RADIUS;
 
   var settings = { blur: DEFAULT_SETTINGS.blur, bg: DEFAULT_SETTINGS.bg, text: DEFAULT_SETTINGS.text };
   var sessionLog = [];
@@ -696,6 +1170,7 @@ input:focus-visible {
   var completedCount = 0;
   var audioCtx = null;
   var timers = {};
+  var pomo = null;
 
   var workspace = document.getElementById('workspace');
   var panel = document.getElementById('settingsPanel');
@@ -785,6 +1260,7 @@ input:focus-visible {
       var payload = {
         settings: settings,
         timers: {},
+        pomo: pomo ? pomo.toJSON() : null,
         log: sessionLog,
         totalSeconds: totalSeconds,
         completedCount: completedCount
@@ -808,8 +1284,9 @@ input:focus-visible {
   }
 
   function updateTitle() {
-    var active = Object.keys(timers)
-      .map(function (k) { return timers[k]; })
+    var clocks = Object.keys(timers).map(function (k) { return timers[k]; });
+    if (pomo) clocks.push(pomo);
+    var active = clocks
       .filter(function (t) { return t.running; })
       .sort(function (a, b) { return a.remaining - b.remaining; })[0];
     document.title = active ? formatClock(active.remaining) + ' \u00b7 ' + active.displayName() : 'Study Station';
@@ -1037,6 +1514,365 @@ input:focus-visible {
     }
   }
 
+  function isMode(name) {
+    return Object.prototype.hasOwnProperty.call(POMO_MODES, name);
+  }
+
+  class FocusCore {
+    constructor(root) {
+      var self = this;
+      this.root = root;
+      this.el = {
+        ring: root.querySelector('[data-role="ring"]'),
+        modeLabel: root.querySelector('[data-role="modeLabel"]'),
+        display: root.querySelector('[data-role="display"]'),
+        status: root.querySelector('[data-role="status"]'),
+        toggle: root.querySelector('[data-role="toggle"]'),
+        reset: root.querySelector('[data-role="reset"]'),
+        skip: root.querySelector('[data-role="skip"]'),
+        newCycle: root.querySelector('[data-role="newCycle"]'),
+        dots: root.querySelector('[data-role="dots"]'),
+        roundLabel: root.querySelector('[data-role="roundLabel"]'),
+        auto: root.querySelector('[data-role="auto"]'),
+        durHint: root.querySelector('[data-role="durHint"]')
+      };
+      this.tabs = Array.prototype.slice.call(root.querySelectorAll('.mode-tab'));
+      this.tabMeta = {};
+      this.durInputs = {};
+      this.durations = {};
+      Object.keys(POMO_MODES).forEach(function (key) {
+        self.tabMeta[key] = root.querySelector('[data-meta="' + key + '"]');
+        self.durInputs[key] = root.querySelector('[data-dur="' + key + '"]');
+        self.durations[key] = POMO_MODES[key].fallback * 60;
+      });
+      this.dotNodes = [];
+      for (var i = 0; i < POMO_ROUNDS; i++) {
+        var dot = document.createElement('span');
+        dot.className = 'dot';
+        this.el.dots.appendChild(dot);
+        this.dotNodes.push(dot);
+      }
+      this.mode = 'focus';
+      this.round = 0;
+      this.autoStart = false;
+      this.running = false;
+      this.ticker = null;
+      this.endAt = 0;
+      this.phaseMs = 0;
+      this.remainingMs = 0;
+      this.remaining = 0;
+      this.el.ring.style.strokeDasharray = RING_LENGTH.toFixed(3) + ' ' + RING_LENGTH.toFixed(3);
+      this.buildTicks();
+      this.el.auto.checked = false;
+      this.syncInputs();
+      this.loadPhase('focus');
+      this.bind();
+      this.render();
+    }
+
+    displayName() {
+      return POMO_MODES[this.mode].label;
+    }
+
+    buildTicks() {
+      var ns = 'http://www.w3.org/2000/svg';
+      var svg = this.el.ring.ownerSVGElement;
+      var group = document.createElementNS(ns, 'g');
+      group.setAttribute('class', 'ring-ticks');
+      for (var i = 0; i < 60; i++) {
+        var major = i % 5 === 0;
+        var angle = i * 6 * Math.PI / 180;
+        var inner = major ? 136 : 141;
+        var outer = 146;
+        var line = document.createElementNS(ns, 'line');
+        line.setAttribute('x1', (150 + inner * Math.sin(angle)).toFixed(2));
+        line.setAttribute('y1', (150 - inner * Math.cos(angle)).toFixed(2));
+        line.setAttribute('x2', (150 + outer * Math.sin(angle)).toFixed(2));
+        line.setAttribute('y2', (150 - outer * Math.cos(angle)).toFixed(2));
+        if (major) line.setAttribute('class', 'major');
+        group.appendChild(line);
+      }
+      svg.insertBefore(group, svg.firstChild);
+    }
+
+    syncInputs() {
+      var self = this;
+      Object.keys(POMO_MODES).forEach(function (key) {
+        self.durInputs[key].value = minutesToText(self.durations[key]);
+        self.durInputs[key].classList.remove('invalid');
+      });
+      this.el.durHint.textContent = '';
+    }
+
+    bind() {
+      var self = this;
+      this.el.toggle.addEventListener('click', function () { self.toggle(); });
+      this.el.reset.addEventListener('click', function () { self.reset(); });
+      this.el.skip.addEventListener('click', function () { self.skip(); });
+      this.el.newCycle.addEventListener('click', function () { self.newCycleStart(); });
+      this.tabs.forEach(function (tab) {
+        tab.addEventListener('click', function () { self.selectMode(tab.getAttribute('data-mode')); });
+      });
+      Object.keys(this.durInputs).forEach(function (key) {
+        self.durInputs[key].addEventListener('input', function () { self.setDuration(key, false); });
+        self.durInputs[key].addEventListener('change', function () { self.setDuration(key, true); });
+      });
+      this.el.auto.addEventListener('change', function () {
+        self.autoStart = self.el.auto.checked;
+        save();
+      });
+    }
+
+    isFresh() {
+      return !this.running && this.remainingMs === this.phaseMs;
+    }
+
+    loadPhase(mode) {
+      this.mode = mode;
+      if (mode === 'focus' && this.round >= POMO_ROUNDS) this.round = 0;
+      this.phaseMs = this.durations[mode] * 1000;
+      this.remainingMs = this.phaseMs;
+      this.remaining = this.durations[mode];
+      this.root.classList.remove('finished');
+    }
+
+    nextMode(completed) {
+      if (this.mode === 'focus') {
+        return completed && this.round >= POMO_ROUNDS ? 'long' : 'short';
+      }
+      return 'focus';
+    }
+
+    stopTicker() {
+      if (this.ticker !== null) clearInterval(this.ticker);
+      this.ticker = null;
+    }
+
+    toggle() {
+      if (this.running) this.pause(); else this.start();
+    }
+
+    start() {
+      var self = this;
+      if (this.running) return;
+      if (this.remainingMs <= 0) this.remainingMs = this.phaseMs;
+      wakeAudio();
+      this.root.classList.remove('finished');
+      this.endAt = Date.now() + this.remainingMs;
+      this.running = true;
+      this.stopTicker();
+      this.ticker = setInterval(function () { self.tick(); }, 200);
+      this.render();
+      save();
+    }
+
+    pause() {
+      if (!this.running) return;
+      this.stopTicker();
+      this.remainingMs = Math.max(1, this.endAt - Date.now());
+      this.remaining = Math.ceil(this.remainingMs / 1000);
+      this.running = false;
+      this.render();
+      save();
+    }
+
+    reset() {
+      this.stopTicker();
+      this.running = false;
+      this.remainingMs = this.phaseMs;
+      this.remaining = Math.ceil(this.phaseMs / 1000);
+      this.root.classList.remove('finished');
+      this.render();
+      save();
+    }
+
+    tick() {
+      var left = this.endAt - Date.now();
+      if (left <= 0) {
+        this.complete();
+        return;
+      }
+      var secs = Math.ceil(left / 1000);
+      var changed = secs !== this.remaining;
+      this.remainingMs = left;
+      this.remaining = secs;
+      this.render();
+      if (changed) save();
+    }
+
+    complete() {
+      var self = this;
+      this.stopTicker();
+      this.running = false;
+      this.remainingMs = 0;
+      this.remaining = 0;
+      if (this.mode === 'focus') {
+        var secs = Math.round(this.phaseMs / 1000);
+        sessionLog.unshift({ name: POMO_MODES.focus.label, seconds: secs, at: Date.now() });
+        if (sessionLog.length > LOG_LIMIT) sessionLog.length = LOG_LIMIT;
+        totalSeconds += secs;
+        completedCount += 1;
+        this.round = Math.min(POMO_ROUNDS, this.round + 1);
+        renderDashboard();
+      }
+      chime();
+      var next = this.nextMode(true);
+      this.loadPhase(next);
+      this.root.classList.add('finished');
+      setTimeout(function () { self.root.classList.remove('finished'); }, 6000);
+      if (this.autoStart) {
+        this.start();
+      } else {
+        this.render();
+        save();
+      }
+    }
+
+    selectMode(mode) {
+      if (!isMode(mode) || mode === this.mode) return;
+      this.stopTicker();
+      this.running = false;
+      this.loadPhase(mode);
+      this.render();
+      save();
+    }
+
+    skip() {
+      var wasRunning = this.running;
+      var next = this.nextMode(false);
+      this.stopTicker();
+      this.running = false;
+      this.loadPhase(next);
+      if (wasRunning) {
+        this.start();
+      } else {
+        this.render();
+        save();
+      }
+    }
+
+    newCycleStart() {
+      this.stopTicker();
+      this.running = false;
+      this.round = 0;
+      this.loadPhase('focus');
+      this.render();
+      save();
+    }
+
+    setDuration(key, commit) {
+      var input = this.durInputs[key];
+      var secs = parseMinutes(input.value);
+      if (secs === null) {
+        if (commit) {
+          input.value = minutesToText(this.durations[key]);
+          input.classList.remove('invalid');
+          this.el.durHint.textContent = '';
+        } else {
+          input.classList.add('invalid');
+          this.el.durHint.textContent = 'Use minutes like 25, 7.5 or .2';
+        }
+        return;
+      }
+      input.classList.remove('invalid');
+      this.el.durHint.textContent = '';
+      var fresh = key === this.mode && this.isFresh();
+      this.durations[key] = secs;
+      if (fresh) {
+        this.phaseMs = secs * 1000;
+        this.remainingMs = this.phaseMs;
+        this.remaining = secs;
+      }
+      if (commit) input.value = minutesToText(secs);
+      this.render();
+      save();
+    }
+
+    render() {
+      var self = this;
+      var fraction = this.phaseMs > 0 ? Math.max(0, Math.min(1, this.remainingMs / this.phaseMs)) : 0;
+      var fresh = this.isFresh();
+      this.root.setAttribute('data-mode', this.mode);
+      this.root.classList.toggle('running', this.running);
+      this.el.ring.style.strokeDashoffset = (RING_LENGTH * (1 - fraction)).toFixed(3);
+      this.el.modeLabel.textContent = POMO_MODES[this.mode].label;
+      this.el.display.textContent = formatClock(this.remaining);
+      this.el.display.classList.toggle('long', this.remaining >= 3600);
+      this.el.status.textContent = this.running ? 'Running' : fresh ? 'Ready' : 'Paused';
+      this.el.toggle.textContent = this.running ? 'Pause' : fresh ? 'Start' : 'Resume';
+      this.tabs.forEach(function (tab) {
+        var active = tab.getAttribute('data-mode') === self.mode;
+        tab.classList.toggle('active', active);
+        tab.setAttribute('aria-pressed', String(active));
+      });
+      Object.keys(POMO_MODES).forEach(function (key) {
+        self.tabMeta[key].textContent = formatDuration(self.durations[key]) + ' · key ' + POMO_MODES[key].key;
+      });
+      this.dotNodes.forEach(function (dot, index) {
+        dot.classList.toggle('on', index < self.round);
+      });
+      if (this.mode === 'focus') {
+        this.el.roundLabel.textContent = 'Round ' + Math.min(this.round + 1, POMO_ROUNDS) + ' of ' + POMO_ROUNDS;
+      } else if (this.mode === 'short') {
+        this.el.roundLabel.textContent = this.round + ' of ' + POMO_ROUNDS + ' rounds banked';
+      } else {
+        this.el.roundLabel.textContent = 'Cycle complete · recharge';
+      }
+      updateTitle();
+    }
+
+    toJSON() {
+      return {
+        mode: this.mode,
+        durations: this.durations,
+        phaseMs: this.phaseMs,
+        remainingMs: this.remainingMs,
+        round: this.round,
+        autoStart: this.autoStart,
+        running: this.running,
+        endAt: this.endAt
+      };
+    }
+
+    restore(data) {
+      var self = this;
+      if (!data || typeof data !== 'object') return;
+      if (data.durations && typeof data.durations === 'object') {
+        Object.keys(POMO_MODES).forEach(function (key) {
+          var value = Number(data.durations[key]);
+          if (isFinite(value) && value >= 1 && value <= MAX_SECONDS) self.durations[key] = Math.round(value);
+        });
+      }
+      this.syncInputs();
+      var round = Math.round(Number(data.round));
+      this.round = isFinite(round) && round >= 0 && round <= POMO_ROUNDS ? round : 0;
+      this.loadPhase(typeof data.mode === 'string' && isMode(data.mode) ? data.mode : 'focus');
+      this.autoStart = data.autoStart === true;
+      this.el.auto.checked = this.autoStart;
+      var phase = Number(data.phaseMs);
+      if (isFinite(phase) && phase >= 1000 && phase <= MAX_SECONDS * 1000) this.phaseMs = Math.round(phase);
+      var rem = Number(data.remainingMs);
+      this.remainingMs = isFinite(rem) && rem > 0 && rem <= this.phaseMs ? Math.round(rem) : this.phaseMs;
+      this.remaining = Math.ceil(this.remainingMs / 1000);
+      var endAt = Number(data.endAt);
+      if (data.running === true && isFinite(endAt)) {
+        var left = endAt - Date.now();
+        if (left > 0 && left <= this.phaseMs) {
+          this.remainingMs = left;
+          this.remaining = Math.ceil(left / 1000);
+          this.endAt = endAt;
+          this.running = true;
+          this.stopTicker();
+          this.ticker = setInterval(function () { self.tick(); }, 200);
+        } else {
+          this.remainingMs = this.phaseMs;
+          this.remaining = Math.ceil(this.phaseMs / 1000);
+        }
+      }
+      this.render();
+    }
+  }
+
   function renderDashboard() {
     totalFocusEl.textContent = formatDuration(totalSeconds);
     sessionCountEl.textContent = completedCount + (completedCount === 1 ? ' session' : ' sessions') + ' completed';
@@ -1151,8 +1987,8 @@ input:focus-visible {
   if (saved && saved.settings) {
     var s = saved.settings;
     var blur = Number(s.blur);
-    if (isFinite(blur) && blur >= 0 && blur <= 40) settings.blur = Math.round(blur);
-    if (typeof s.bg === 'string' && HEX.test(s.bg)) settings.bg = s.bg;
+    if (isFinite(blur) && blur >= 0 && blur <= 40 && Math.round(blur) !== LEGACY_BLUR) settings.blur = Math.round(blur);
+    if (typeof s.bg === 'string' && HEX.test(s.bg) && LEGACY_BGS.indexOf(s.bg.toLowerCase()) === -1) settings.bg = s.bg;
     if (typeof s.text === 'string' && HEX.test(s.text)) settings.text = s.text;
   }
 
@@ -1180,6 +2016,61 @@ input:focus-visible {
     timers.a.restore(saved.timers.a);
     timers.b.restore(saved.timers.b);
   }
+
+  pomo = new FocusCore(document.getElementById('pomo'));
+  if (saved && saved.pomo) pomo.restore(saved.pomo);
+
+  document.addEventListener('keydown', function (e) {
+    if (e.ctrlKey || e.metaKey || e.altKey || e.repeat) return;
+    var tag = e.target && e.target.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || tag === 'BUTTON') return;
+    if (e.code === 'Space') {
+      e.preventDefault();
+      pomo.toggle();
+    } else if (e.key === '1' || e.key === '2' || e.key === '3') {
+      pomo.selectMode(['focus', 'short', 'long'][Number(e.key) - 1]);
+    } else if (e.key === 'n' || e.key === 'N') {
+      pomo.skip();
+    }
+  });
+
+  (function trackCursorGlow() {
+    var shard = document.getElementById('cursor-glow-shard');
+    var pointerX = 0;
+    var pointerY = 0;
+    var hasPointer = false;
+    var frameQueued = false;
+
+    function paintShard() {
+      frameQueued = false;
+      shard.style.setProperty('--mouse-x', pointerX + 'px');
+      shard.style.setProperty('--mouse-y', pointerY + 'px');
+    }
+
+    function queuePaint() {
+      if (frameQueued) return;
+      frameQueued = true;
+      requestAnimationFrame(paintShard);
+    }
+
+    function restPosition() {
+      if (hasPointer) return;
+      pointerX = window.innerWidth / 2;
+      pointerY = window.innerHeight / 3;
+      queuePaint();
+    }
+
+    window.addEventListener('mousemove', function (e) {
+      if (!hasPointer && e.clientX === 0 && e.clientY === 0) return;
+      hasPointer = true;
+      pointerX = e.clientX;
+      pointerY = e.clientY;
+      queuePaint();
+    }, { passive: true });
+
+    window.addEventListener('resize', restPosition);
+    restPosition();
+  })();
 
   renderDashboard();
   updateTitle();
