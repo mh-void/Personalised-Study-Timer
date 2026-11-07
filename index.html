@@ -4,8 +4,25 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark">
-<meta name="theme-color" content="#030303">
+<meta name="theme-color" content="#030406">
 <title>Study Station</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600&family=Montserrat:wght@200;300;400;500;600&display=swap">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='-12%20-12%2088%2088'%3E%3Ccircle%20cx='32'%20cy='36'%20r='22'%20stroke='white'%20stroke-width='3'%20fill='none'/%3E%3Cpath%20d='M32%2014v4M32%2020v4M22%2036h4M32%2036l8-8'%20stroke='white'%20stroke-width='3'%20stroke-linecap='round'/%3E%3Cpath%20d='M32%2036l12-14'%20stroke='white'%20stroke-width='2'%20stroke-linecap='round'/%3E%3Cpath%20d='M24%208h16M32%204v4'%20stroke='white'%20stroke-width='4'%20stroke-linecap='round'/%3E%3C/svg%3E">
+<script>
+(function () {
+  try {
+    var raw = window.localStorage.getItem('studyStation.v1');
+    if (!raw) return;
+    var saved = JSON.parse(raw);
+    var font = saved && saved.settings ? saved.settings.font : null;
+    if (font === 'apple' || font === 'inter' || font === 'montserrat' || font === 'samsung') {
+      document.documentElement.setAttribute('data-font', font);
+    }
+  } catch (err) {}
+})();
+</script>
 <style>
 :root {
   --bg-color: #030406 !important;
@@ -23,48 +40,58 @@
   --accent: #f5f5f7;
   --lavender: #c4b5fd;
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
-  --panel-width: 340px;
-  --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI Variable Display", "Segoe UI", system-ui, sans-serif;
+  --panel-width: 360px;
+  --font-apple: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI Variable Display", "Segoe UI", "Roboto", system-ui, sans-serif;
+  --font-samsung: "Segoe UI Variable Display", "Segoe UI Variable Text", "Segoe UI", "Roboto", "Inter", system-ui, sans-serif;
+  --font-inter: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --font-montserrat: "Montserrat", "Segoe UI Variable Display", "Segoe UI", system-ui, sans-serif;
+  --font: var(--font-apple);
   --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0.11 0 0 0 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
+
+html[data-font="apple"] { --font: var(--font-apple); }
+html[data-font="inter"] { --font: var(--font-inter); }
+html[data-font="montserrat"] { --font: var(--font-montserrat); }
+html[data-font="samsung"] { --font: var(--font-samsung); }
 
 *, *::before, *::after {
   box-sizing: border-box;
 }
 
 html {
-  overflow-y: scroll;
   color-scheme: dark;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.16) transparent;
+  scrollbar-gutter: stable;
 }
 
-@supports not selector(::-webkit-scrollbar) {
-  html {
-    scrollbar-color: rgba(255, 255, 255, 0.2) #030406;
-    scrollbar-width: auto;
-  }
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
 }
 
-html::-webkit-scrollbar,
-body::-webkit-scrollbar {
-  width: 10px !important;
-  display: block !important;
+::-webkit-scrollbar-track {
+  background: transparent;
 }
 
-html::-webkit-scrollbar-track,
-body::-webkit-scrollbar-track {
-  background: var(--bg-color) !important;
-  border-left: 1px solid rgba(255, 255, 255, 0.1) !important;
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
 }
 
-html::-webkit-scrollbar-thumb,
-body::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2) !important;
-  border-radius: 5px;
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.24);
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
 }
 
 body {
   margin: 0;
   min-height: 100vh;
+  overflow-x: hidden;
   background-color: var(--bg-color) !important;
   color: var(--text-color);
   font-family: var(--font);
@@ -85,6 +112,21 @@ body {
   overflow: hidden;
   pointer-events: none;
   contain: layout paint;
+}
+
+.mesh::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.16) 1px, rgba(255, 255, 255, 0) 1.6px),
+    var(--grain);
+  background-size: 28px 28px, 160px 160px;
+  opacity: 0.7;
+  pointer-events: none;
 }
 
 .mesh-base {
@@ -127,6 +169,55 @@ body {
   height: 62vmax;
   background: radial-gradient(circle at center, #060711 0%, rgba(6, 7, 17, 0) 64%);
   animation: meshDriftC 78s ease-in-out infinite alternate;
+}
+
+.mote {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.5;
+  will-change: transform;
+}
+
+.mote-a {
+  top: 14%;
+  left: 4%;
+  width: 30vmax;
+  height: 30vmax;
+  background: radial-gradient(circle, rgba(96, 88, 230, 0.5) 0%, rgba(96, 88, 230, 0.16) 38%, rgba(96, 88, 230, 0) 68%);
+  animation: moteDriftA 46s ease-in-out infinite alternate;
+}
+
+.mote-b {
+  top: 42%;
+  right: 2%;
+  width: 24vmax;
+  height: 24vmax;
+  background: radial-gradient(circle, rgba(128, 64, 200, 0.42) 0%, rgba(128, 64, 200, 0.14) 40%, rgba(128, 64, 200, 0) 70%);
+  animation: moteDriftB 52s ease-in-out infinite alternate;
+}
+
+.mote-c {
+  top: 66%;
+  left: 18%;
+  width: 26vmax;
+  height: 26vmax;
+  background: radial-gradient(circle, rgba(52, 118, 190, 0.38) 0%, rgba(52, 118, 190, 0.12) 42%, rgba(52, 118, 190, 0) 70%);
+  animation: moteDriftC 58s ease-in-out infinite alternate;
+}
+
+@keyframes moteDriftA {
+  from { transform: translate3d(0, 0, 0) scale(1); }
+  to { transform: translate3d(7vw, 6vh, 0) scale(1.14); }
+}
+
+@keyframes moteDriftB {
+  from { transform: translate3d(0, 0, 0) scale(1.05); }
+  to { transform: translate3d(-6vw, -7vh, 0) scale(0.92); }
+}
+
+@keyframes moteDriftC {
+  from { transform: translate3d(0, 0, 0) scale(0.96); }
+  to { transform: translate3d(4vw, -5vh, 0) scale(1.1); }
 }
 
 @keyframes meshDriftA {
@@ -176,12 +267,22 @@ html[data-mode="long"] .wash-long {
 #cursor-glow-shard {
   position: fixed;
   top: 0;
-  right: 0;
-  bottom: 0;
   left: 0;
+  width: 700px;
+  height: 700px;
+  margin: -350px 0 0 -350px;
   z-index: 1;
   pointer-events: none;
-  background: radial-gradient(circle 400px at var(--mouse-x, 0px) var(--mouse-y, 0px), rgba(147, 51, 234, 0.08), transparent 80%);
+  background: radial-gradient(circle 350px at center, rgba(147, 51, 234, 0.09), transparent 80%);
+  transform: translate3d(var(--mouse-x, 0px), var(--mouse-y, 0px), 0);
+  transition: transform 0.15s cubic-bezier(0.1, 0.8, 0.2, 1);
+  will-change: transform;
+}
+
+@media (hover: none) {
+  #cursor-glow-shard {
+    display: none;
+  }
 }
 
 .workspace {
@@ -199,7 +300,7 @@ html[data-mode="long"] .wash-long {
   display: flex;
   flex-direction: column;
   padding: 48px 32px 96px;
-  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: padding 0.5s var(--ease);
 }
 
 .workspace.panel-open .main-content {
@@ -220,46 +321,24 @@ html[data-mode="long"] .wash-long {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 32px;
-  padding: 48px 0 24px;
+  gap: 20px;
+  padding: 40px 0 20px;
   text-align: center;
 }
 
 .hero-mark {
   position: relative;
-  width: clamp(112px, 12vw, 152px);
-  aspect-ratio: 1 / 1;
-  animation: heroFloat 7s ease-in-out infinite;
-  will-change: transform;
-}
-
-.hero-mark::before {
-  content: '';
-  position: absolute;
-  top: -45%;
-  right: -45%;
-  bottom: -45%;
-  left: -45%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0) 62%);
-  pointer-events: none;
-}
-
-@keyframes heroFloat {
-  0%, 100% { transform: translate3d(0, 0, 0); }
-  50% { transform: translate3d(0, -8px, 0); }
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .logo {
-  position: relative;
-  width: 100%;
-  height: 100%;
   display: block;
-  filter: drop-shadow(0 0 18px rgba(255, 255, 255, 0.14));
-  transition: filter 0.8s var(--ease);
-}
-
-html[data-running="true"] .logo {
-  filter: drop-shadow(0 0 26px rgba(255, 255, 255, 0.26));
+  width: 40px;
+  height: 40px;
 }
 
 .logo-sweep {
@@ -349,6 +428,8 @@ html[data-running="true"] .logo {
 .btn:focus-visible,
 .chip:focus-visible,
 .mode-tab:focus-visible,
+.font-option:focus-visible,
+.seg-btn:focus-visible,
 input:focus-visible {
   outline: 2px solid rgba(255, 255, 255, 0.6);
   outline-offset: 2px;
@@ -378,6 +459,11 @@ input:focus-visible {
   line-height: 16px;
 }
 
+.btn-block {
+  width: 100%;
+  margin-top: 16px;
+}
+
 .btn:disabled,
 .chip:disabled {
   opacity: 0.35;
@@ -386,7 +472,8 @@ input:focus-visible {
 
 .timer-card,
 .pomo,
-.panel-card {
+.panel-card,
+.stopwatch-card {
   position: relative;
   z-index: 2;
   background-color: var(--card-bg) !important;
@@ -400,7 +487,8 @@ input:focus-visible {
 }
 
 .timer-card.running,
-.pomo.running {
+.pomo.running,
+.stopwatch-card.running {
   border-color: var(--hair-strong) !important;
 }
 
@@ -504,10 +592,12 @@ input:focus-visible {
 }
 
 .ring-time {
+  font-family: var(--font);
   font-weight: 200;
   font-size: clamp(2.4rem, 24cqi, 5rem);
   letter-spacing: -0.04em;
   font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1, "lnum" 1;
   line-height: 1;
   white-space: nowrap;
 }
@@ -524,7 +614,6 @@ input:focus-visible {
   text-transform: uppercase;
   color: var(--text-muted);
 }
-
 .pomo-panel {
   display: flex;
   flex-direction: column;
@@ -637,6 +726,23 @@ input:focus-visible {
   letter-spacing: 0;
 }
 
+.workload-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.workload-label {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  line-height: 16px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-right: 4px;
+}
+
 .dur-hint {
   min-height: 16px;
   margin-top: -16px;
@@ -704,6 +810,64 @@ input:focus-visible {
   letter-spacing: 0.02em;
   color: var(--text-muted);
   opacity: 0.7;
+}
+
+.scratch {
+  display: grid;
+  gap: 8px;
+}
+
+.scratch-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.scratch-label {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  line-height: 16px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.scratch-note {
+  font-size: 0.625rem;
+  line-height: 16px;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  opacity: 0.65;
+  white-space: nowrap;
+}
+
+.scratch-input {
+  width: 100%;
+  height: 56px;
+  padding: 8px 10px;
+  border: 1px solid var(--hair);
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.14);
+  color: var(--text-color);
+  font: inherit;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  resize: none;
+  outline: none;
+  caret-color: var(--text-color);
+  transition: border-color 0.2s var(--ease), background 0.2s var(--ease), box-shadow 0.2s var(--ease);
+}
+
+.scratch-input::placeholder {
+  color: var(--text-muted);
+  opacity: 0.7;
+}
+
+.scratch-input:focus {
+  border-color: var(--hair-strong);
+  background: rgba(0, 0, 0, 0.22);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.08);
 }
 
 @container (max-width: 700px) {
@@ -794,6 +958,7 @@ input:focus-visible {
   letter-spacing: -0.04em;
   font-size: clamp(3rem, 31cqi, 8rem);
   font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1, "lnum" 1;
   line-height: 1;
   white-space: nowrap;
   color: var(--text-color);
@@ -896,11 +1061,23 @@ input:focus-visible {
   border-color: var(--hair-strong);
 }
 
+.chip.active,
+.chip[aria-pressed="true"] {
+  color: var(--text-color);
+  background: var(--surface-raised);
+  border-color: var(--hair-strong);
+}
 .dashboard {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
   gap: 24px;
-  margin-bottom: 64px;
+  align-items: start;
+}
+
+.dash-col {
+  display: grid;
+  gap: 24px;
+  min-width: 0;
 }
 
 .panel-card {
@@ -908,7 +1085,8 @@ input:focus-visible {
   min-width: 0;
 }
 
-.panel-card h2 {
+.panel-card h2,
+.stopwatch-head h2 {
   margin: 0;
   font-size: 0.75rem;
   font-weight: 500;
@@ -1108,6 +1286,66 @@ input:focus-visible {
   color: var(--text-muted);
 }
 
+.stopwatch-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 28px 32px;
+  container-type: inline-size;
+  transition: border-color 0.4s var(--ease);
+}
+
+.stopwatch-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.sw-state {
+  font-size: 0.625rem;
+  font-weight: 500;
+  line-height: 16px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  border: 1px solid var(--hair);
+  border-radius: 999px;
+  padding: 4px 10px;
+  white-space: nowrap;
+}
+
+.stopwatch-display {
+  font-family: var(--font);
+  font-weight: 200;
+  font-size: clamp(1.9rem, 8cqi, 2.6rem);
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1, "lnum" 1;
+  white-space: nowrap;
+}
+
+.stopwatch-sub {
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.stopwatch-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.stopwatch-actions .btn {
+  padding: 8px 20px;
+  font-size: 0.875rem;
+  line-height: 20px;
+  min-width: 0;
+}
+
 .log-head {
   display: flex;
   align-items: center;
@@ -1173,21 +1411,23 @@ input:focus-visible {
 }
 
 .settings-panel {
-  width: 340px;
-  min-width: 340px;
+  width: var(--panel-width);
+  min-width: var(--panel-width);
   position: fixed;
   top: 0;
-  right: -340px;
+  right: calc(-1 * var(--panel-width));
   height: 100vh;
-  background-color: rgba(10, 11, 15, 0.82);
-  -webkit-backdrop-filter: blur(40px) saturate(210%);
-  backdrop-filter: blur(40px) saturate(210%);
+  background-color: rgba(10, 11, 15, 0.9);
+  -webkit-backdrop-filter: blur(var(--blur-intensity, 40px)) saturate(210%);
+  backdrop-filter: blur(var(--blur-intensity, 40px)) saturate(210%);
   border-left: 1px solid var(--hair);
   z-index: 999;
-  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: right 0.5s var(--ease), visibility 0.5s;
   visibility: hidden;
   padding: 32px 24px;
   overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
   color: #ffffff;
 }
 
@@ -1210,7 +1450,7 @@ input:focus-visible {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 32px;
+  margin-bottom: 24px;
 }
 
 .panel-head h2 {
@@ -1219,6 +1459,134 @@ input:focus-visible {
   font-weight: 600;
   line-height: 24px;
   letter-spacing: -0.01em;
+}
+
+.set-group {
+  margin: 0;
+}
+
+.set-group + .set-group {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid var(--hair-soft);
+}
+
+.set-title {
+  margin: 0 0 12px;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  line-height: 16px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #a1a1a6;
+}
+
+.set-note {
+  margin: 0 0 12px;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: #a1a1a6;
+}
+
+.font-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.font-option {
+  appearance: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding: 10px;
+  text-align: left;
+  font: inherit;
+  color: var(--text-muted);
+  background: var(--surface);
+  border: 1px solid var(--hair);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: color 0.2s var(--ease), background 0.2s var(--ease), border-color 0.2s var(--ease);
+}
+
+.font-option:hover {
+  color: var(--text-color);
+  border-color: var(--hair-strong);
+}
+
+.font-option[aria-pressed="true"] {
+  color: var(--text-color);
+  background: var(--surface-raised);
+  border-color: var(--hair-strong);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.font-sample {
+  flex: none;
+  width: 26px;
+  font-size: 1.375rem;
+  line-height: 1;
+  font-weight: 300;
+  text-align: center;
+}
+
+.font-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.font-name {
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.font-meta {
+  font-size: 0.625rem;
+  line-height: 1.2;
+  letter-spacing: 0.04em;
+  opacity: 0.7;
+}
+
+.seg {
+  display: grid;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid var(--hair);
+  border-radius: 14px;
+  background: var(--surface);
+}
+
+.seg-btn {
+  appearance: none;
+  font: inherit;
+  font-size: 0.8125rem;
+  line-height: 20px;
+  text-align: left;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color 0.2s var(--ease), background 0.2s var(--ease), border-color 0.2s var(--ease);
+}
+
+.seg-btn:hover {
+  color: var(--text-color);
+}
+
+.seg-btn[aria-pressed="true"] {
+  color: var(--text-color);
+  background: var(--surface-raised);
+  border-color: var(--hair-strong);
 }
 
 .setting {
@@ -1290,6 +1658,10 @@ input:focus-visible {
     font-size: 0.8125rem;
     line-height: 16px;
   }
+
+  .stopwatch-card {
+    padding: 24px;
+  }
 }
 
 @media (max-width: 380px) {
@@ -1311,7 +1683,12 @@ input:focus-visible {
   .chip,
   .mode-tab,
   .heat-cell,
-  .badge {
+  .badge,
+  .font-option,
+  .seg-btn,
+  .stopwatch-card,
+  .scratch-input,
+  #cursor-glow-shard {
     transition-duration: 0.01s;
   }
 
@@ -1319,8 +1696,8 @@ input:focus-visible {
   .pomo.finished,
   .panel-card.bump,
   .logo-sweep,
-  .hero-mark,
   .blob,
+  .mote,
   .ring-center.swap,
   .stat-value.pop,
   .heat-cell.pop,
@@ -1337,6 +1714,9 @@ input:focus-visible {
   <div class="blob blob-a"></div>
   <div class="blob blob-b"></div>
   <div class="blob blob-c"></div>
+  <div class="mote mote-a"></div>
+  <div class="mote mote-b"></div>
+  <div class="mote mote-c"></div>
   <div class="wash wash-focus"></div>
   <div class="wash wash-short"></div>
   <div class="wash wash-long"></div>
@@ -1348,35 +1728,23 @@ input:focus-visible {
       <header class="hero">
         <button class="btn settings-toggle" id="settingsToggle" type="button" aria-expanded="false" aria-controls="settingsPanel">Settings</button>
         <div class="hero-mark">
-          <svg class="logo" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Study Station stopwatch logo">
-            <defs>
-              <filter id="logoGlow" x="-40%" y="-40%" width="180%" height="180%">
-                <feGaussianBlur stdDeviation="1.6" result="blur"></feGaussianBlur>
-                <feMerge>
-                  <feMergeNode in="blur"></feMergeNode>
-                  <feMergeNode in="SourceGraphic"></feMergeNode>
-                </feMerge>
-              </filter>
-            </defs>
-            <rect x="26" y="2.5" width="12" height="5.5" rx="1.5" fill="none" stroke="#f5f5f7" stroke-width="1.5"></rect>
-            <line x1="32" y1="8" x2="32" y2="12" stroke="#f5f5f7" stroke-width="1.5" stroke-linecap="round"></line>
-            <line x1="49.5" y1="15.5" x2="53" y2="12" stroke="#f5f5f7" stroke-width="2" stroke-linecap="round"></line>
-            <circle cx="32" cy="36" r="24" fill="#030303" stroke="rgba(255,255,255,0.3)" stroke-width="1.25"></circle>
-            <circle cx="32" cy="36" r="20" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="2"></circle>
-            <circle cx="32" cy="36" r="20" fill="none" stroke="#f5f5f7" stroke-width="2" stroke-linecap="round" stroke-dasharray="94 32" transform="rotate(-90 32 36)" filter="url(#logoGlow)"></circle>
-            <g stroke="#f5f5f7" stroke-width="1.2" stroke-linecap="round" opacity="0.7">
-              <line x1="32" y1="18" x2="32" y2="20.5"></line>
-              <line x1="50" y1="36" x2="47.5" y2="36"></line>
-              <line x1="32" y1="54" x2="32" y2="51.5"></line>
-              <line x1="14" y1="36" x2="16.5" y2="36"></line>
+          <svg class="logo" viewBox="0 0 64 64" width="40" height="40" role="img" aria-label="Study Station stopwatch logo" xmlns="http://www.w3.org/2000/svg">
+            <rect x="26" y="2.5" width="12" height="5.5" rx="1.5" fill="none" stroke="#ffffff" stroke-width="2"></rect>
+            <line x1="32" y1="8" x2="32" y2="12" stroke="#ffffff" stroke-width="2" stroke-linecap="round"></line>
+            <line x1="49.5" y1="15.5" x2="53" y2="12" stroke="#ffffff" stroke-width="2" stroke-linecap="round"></line>
+            <circle cx="32" cy="36" r="24" fill="none" stroke="#ffffff" stroke-width="2"></circle>
+            <circle cx="32" cy="36" r="19" fill="none" stroke="#ffffff" stroke-width="2" opacity="0.35"></circle>
+            <g stroke="#ffffff" stroke-width="2" stroke-linecap="round">
+              <line x1="32" y1="18" x2="32" y2="21"></line>
+              <line x1="50" y1="36" x2="47" y2="36"></line>
+              <line x1="32" y1="54" x2="32" y2="51"></line>
+              <line x1="14" y1="36" x2="17" y2="36"></line>
             </g>
-            <polygon points="32,22.5 33.4,36 30.6,36" fill="#ffffff"></polygon>
-            <polygon points="32,28 33.3,36 30.7,36" fill="#ffffff" transform="rotate(115 32 36)"></polygon>
+            <line x1="32" y1="36" x2="32" y2="23" stroke="#ffffff" stroke-width="2" stroke-linecap="round"></line>
             <g class="logo-sweep">
-              <line x1="32" y1="41" x2="32" y2="21.5" stroke="#f5f5f7" stroke-width="1.1" stroke-linecap="round" opacity="0.85"></line>
+              <line x1="32" y1="41" x2="32" y2="22" stroke="#ffffff" stroke-width="2" stroke-linecap="round"></line>
             </g>
-            <circle cx="32" cy="36" r="2.2" fill="#f5f5f7"></circle>
-            <circle cx="32" cy="36" r="0.8" fill="#030303"></circle>
+            <circle cx="32" cy="36" r="2.4" fill="#ffffff"></circle>
           </svg>
         </div>
         <div class="hero-copy">
@@ -1426,6 +1794,14 @@ input:focus-visible {
                   <input class="minutes-input" id="durLong" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" placeholder="15" data-dur="long">
                 </label>
               </div>
+
+              <div class="workload-row" role="group" aria-label="Workload presets">
+                <span class="workload-label">Presets</span>
+                <button class="chip" type="button" data-workload="crunch" data-focus="45" data-break="15" aria-pressed="false">Past Paper Crunch &middot; 45 / 15</button>
+                <button class="chip active" type="button" data-workload="standard" data-focus="25" data-break="5" aria-pressed="true">Standard Pomodoro &middot; 25 / 5</button>
+                <button class="chip" type="button" data-workload="intensive" data-focus="50" data-break="10" aria-pressed="false">Intensive Review &middot; 50 / 10</button>
+              </div>
+
               <div class="dur-hint" data-role="durHint" aria-live="polite"></div>
 
               <div class="cycle-row">
@@ -1440,6 +1816,14 @@ input:focus-visible {
               </label>
 
               <p class="hotkeys">Space start / pause &middot; 1 2 3 switch mode &middot; N skip</p>
+
+              <div class="scratch">
+                <div class="scratch-head">
+                  <label class="scratch-label" for="scratchPad">Scratch pad</label>
+                  <span class="scratch-note" id="scratchNote">Auto-saves locally</span>
+                </div>
+                <textarea class="scratch-input" id="scratchPad" rows="2" maxlength="2000" spellcheck="false" autocomplete="off" placeholder="Formula, page number, or next action&hellip;" aria-describedby="scratchNote"></textarea>
+              </div>
             </div>
           </div>
         </div>
@@ -1491,7 +1875,6 @@ input:focus-visible {
         </article>
       </section>
       </div>
-
       <div class="block">
         <h2 class="section-label">Focus Matrix</h2>
         <section class="dashboard" aria-label="Session metrics">
@@ -1508,45 +1891,93 @@ input:focus-visible {
             <div class="heat-readout" id="heatReadout" aria-live="polite"></div>
             <div class="badges" id="badgeGrid" role="group" aria-label="Achievements"></div>
           </div>
-          <div class="panel-card">
-            <div class="log-head">
-              <h2>Completed Sessions Log</h2>
-              <button class="btn btn-small" id="clearLog" type="button">Clear</button>
+
+          <div class="dash-col">
+            <div class="panel-card">
+              <div class="log-head">
+                <h2>Completed Sessions Log</h2>
+                <button class="btn btn-small" id="clearLog" type="button">Clear</button>
+              </div>
+              <ul class="log-list" id="logList"></ul>
             </div>
-            <ul class="log-list" id="logList"></ul>
+
+            <article class="stopwatch-card" id="stopwatchCard" aria-label="Sprint stopwatch">
+              <div class="stopwatch-head">
+                <h2>Sprint Stopwatch</h2>
+                <span class="sw-state" data-role="swState">Ready</span>
+              </div>
+              <div class="stopwatch-display" data-role="swDisplay" role="timer" aria-label="Sprint stopwatch elapsed time">00:00.000</div>
+              <p class="stopwatch-sub">Freeform timing for flashcard speed runs and open-ended past papers. Runs on its own clock, independent of Focus Core.</p>
+              <div class="stopwatch-actions">
+                <button class="btn btn-primary" type="button" data-role="swToggle">Start</button>
+                <button class="btn" type="button" data-role="swReset">Reset</button>
+              </div>
+            </article>
           </div>
         </section>
       </div>
     </div>
   </main>
 
-  <aside class="settings-panel" id="settingsPanel" aria-label="Settings" aria-hidden="true">
+  <aside class="settings-panel" id="settingsPanel" aria-label="Preferences" aria-hidden="true">
     <div class="panel-head">
-      <h2>Settings</h2>
+      <h2>Preferences</h2>
       <button class="btn btn-small" id="settingsClose" type="button">Close</button>
     </div>
 
-    <div class="setting">
-      <div class="setting-label"><label for="blurSlider">Glass blur</label><output id="blurValue" for="blurSlider">40px</output></div>
-      <input type="range" id="blurSlider" min="0" max="64" step="1" value="40">
-    </div>
+    <section class="set-group" aria-labelledby="typeTitle">
+      <h3 class="set-title" id="typeTitle">Typography</h3>
+      <p class="set-note">Swap the interface typeface instantly. Inter and Montserrat load from Google Fonts; the other two use native system stacks.</p>
+      <div class="font-options" role="group" aria-label="System font">
+        <button class="font-option" type="button" data-font-option="apple" aria-pressed="true">
+          <span class="font-sample" style="font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text',system-ui,sans-serif">Aa</span>
+          <span class="font-copy"><span class="font-name">SF Pro Style</span><span class="font-meta">Apple system</span></span>
+        </button>
+        <button class="font-option" type="button" data-font-option="inter" aria-pressed="false">
+          <span class="font-sample" style="font-family:'Inter',sans-serif">Aa</span>
+          <span class="font-copy"><span class="font-name">Inter</span><span class="font-meta">Google Fonts</span></span>
+        </button>
+        <button class="font-option" type="button" data-font-option="montserrat" aria-pressed="false">
+          <span class="font-sample" style="font-family:'Montserrat',sans-serif">Aa</span>
+          <span class="font-copy"><span class="font-name">Montserrat</span><span class="font-meta">Google Fonts</span></span>
+        </button>
+        <button class="font-option" type="button" data-font-option="samsung" aria-pressed="false">
+          <span class="font-sample" style="font-family:'Segoe UI Variable Display','Segoe UI Variable Text','Roboto',system-ui,sans-serif">Aa</span>
+          <span class="font-copy"><span class="font-name">Segoe UI Variable</span><span class="font-meta">Samsung system</span></span>
+        </button>
+      </div>
+    </section>
 
-    <div class="setting">
-      <div class="setting-label"><label for="bgPicker">Background colour</label></div>
-      <input type="color" id="bgPicker" value="#030406">
-    </div>
+    <section class="set-group" aria-labelledby="soundTitle">
+      <h3 class="set-title" id="soundTitle">Sound</h3>
+      <p class="set-note">A soft three-note cue marks every completed phase and timer. Choose the texture you want to hear.</p>
+      <div class="seg" role="group" aria-label="Completion chime">
+        <button class="seg-btn" type="button" data-chime="gong" aria-pressed="true">Ambient Focus Gong</button>
+        <button class="seg-btn" type="button" data-chime="click" aria-pressed="false">Mechanical Watch Click</button>
+      </div>
+      <button class="btn btn-small btn-block" id="chimePreview" type="button">Preview chime</button>
+    </section>
 
-    <div class="setting">
-      <div class="setting-label"><label for="textPicker">Text colour</label></div>
-      <input type="color" id="textPicker" value="#ffffff">
-    </div>
+    <section class="set-group" aria-labelledby="displayTitle">
+      <h3 class="set-title" id="displayTitle">Display</h3>
+      <div class="setting">
+        <div class="setting-label"><label for="blurSlider">Glass blur</label><output id="blurValue" for="blurSlider">40px</output></div>
+        <input type="range" id="blurSlider" min="0" max="64" step="1" value="40">
+      </div>
+      <div class="setting">
+        <div class="setting-label"><label for="bgPicker">Background colour</label></div>
+        <input type="color" id="bgPicker" value="#030406">
+      </div>
+      <div class="setting">
+        <div class="setting-label"><label for="textPicker">Text colour</label></div>
+        <input type="color" id="textPicker" value="#ffffff">
+      </div>
+      <button class="btn btn-block" id="resetAppearance" type="button">Reset appearance</button>
+    </section>
 
-    <button class="btn" id="resetAppearance" type="button">Reset appearance</button>
-
-    <p class="panel-note">Everything on this page is saved in this browser only: timer names, durations, appearance and your session log.</p>
+    <p class="panel-note">Everything on this page is saved in this browser only: timer names, durations, typeface, chime, appearance and your session log.</p>
   </aside>
 </div>
-
 <script>
 (function () {
   'use strict';
@@ -1554,9 +1985,7 @@ input:focus-visible {
   var STORE_KEY = 'studyStation.v1';
   var MAX_SECONDS = 36000;
   var LOG_LIMIT = 100;
-  var DEFAULT_SETTINGS = { blur: 40, bg: '#030406', text: '#ffffff' };
-  var LEGACY_BGS = ['#0b0c10', '#050608', '#030303'];
-  var LEGACY_BLURS = [12, 24, 32];
+  var DEFAULT_SETTINGS = { blur: 40, bg: '#030406', text: '#ffffff', font: 'apple', chime: 'gong' };
   var HEX = /^#[0-9a-fA-F]{6}$/;
   var POMO_ROUNDS = 4;
   var POMO_MODES = {
@@ -1564,23 +1993,35 @@ input:focus-visible {
     short: { label: 'Short Recovery Break', fallback: 5, key: '2' },
     long: { label: 'Long Brain Rest', fallback: 15, key: '3' }
   };
+  var FONT_LABELS = { apple: 'SF Pro Style', inter: 'Inter', montserrat: 'Montserrat', samsung: 'Segoe UI Variable' };
   var RING_RADIUS = 130;
   var RING_LENGTH = 2 * Math.PI * RING_RADIUS;
+  var HEAT_WEEKS = 4;
+  var DAY_LIMIT = 400;
+  var SCRATCH_LIMIT = 2000;
 
-  var settings = { blur: DEFAULT_SETTINGS.blur, bg: DEFAULT_SETTINGS.bg, text: DEFAULT_SETTINGS.text };
+  var settings = {
+    blur: DEFAULT_SETTINGS.blur,
+    bg: DEFAULT_SETTINGS.bg,
+    text: DEFAULT_SETTINGS.text,
+    font: DEFAULT_SETTINGS.font,
+    chime: DEFAULT_SETTINGS.chime
+  };
   var sessionLog = [];
   var totalSeconds = 0;
   var completedCount = 0;
   var audioCtx = null;
   var timers = {};
   var pomo = null;
+  var sprint = null;
   var dayStats = {};
   var achievements = {};
   var cyclesCompleted = 0;
   var shownTotal = 0;
   var countFrame = 0;
-  var HEAT_WEEKS = 4;
-  var DAY_LIMIT = 400;
+  var blurSaveTimer = 0;
+  var scratchSaveTimer = 0;
+
   var ACHIEVEMENTS = [
     { id: 'first', name: 'First Block', note: 'Finish one session', test: function (s) { return s.count >= 1; } },
     { id: 'hat', name: 'Hat-trick', note: '3 sessions in a day', test: function (s) { return s.bestDay >= 3; } },
@@ -1599,6 +2040,8 @@ input:focus-visible {
   var bgPicker = document.getElementById('bgPicker');
   var textPicker = document.getElementById('textPicker');
   var resetAppearanceBtn = document.getElementById('resetAppearance');
+  var scratchPad = document.getElementById('scratchPad');
+  var chimePreviewBtn = document.getElementById('chimePreview');
   var totalFocusEl = document.getElementById('totalFocus');
   var sessionCountEl = document.getElementById('sessionCount');
   var logListEl = document.getElementById('logList');
@@ -1658,23 +2101,58 @@ input:focus-visible {
     }
   }
 
+  function playGong() {
+    var ctx = audioCtx;
+    if (!ctx) return;
+    var notes = [523.25, 659.25, 783.99];
+    notes.forEach(function (freq, index) {
+      var osc = ctx.createOscillator();
+      var gain = ctx.createGain();
+      var start = ctx.currentTime + index * 0.36;
+      osc.type = index === 2 ? 'sine' : 'triangle';
+      osc.frequency.setValueAtTime(freq, start);
+      osc.frequency.exponentialRampToValueAtTime(freq * 0.996, start + 2.2);
+      gain.gain.setValueAtTime(0.0001, start);
+      gain.gain.exponentialRampToValueAtTime(0.12, start + 0.08);
+      gain.gain.exponentialRampToValueAtTime(0.0001, start + 2.6);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(start);
+      osc.stop(start + 2.7);
+    });
+  }
+
+  function playWatchClick() {
+    var ctx = audioCtx;
+    if (!ctx) return;
+    [0, 0.16, 0.32].forEach(function (offset, index) {
+      var length = Math.max(1, Math.floor(ctx.sampleRate * 0.04));
+      var buffer = ctx.createBuffer(1, length, ctx.sampleRate);
+      var data = buffer.getChannelData(0);
+      for (var i = 0; i < length; i++) {
+        data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, 5);
+      }
+      var source = ctx.createBufferSource();
+      var filter = ctx.createBiquadFilter();
+      var gain = ctx.createGain();
+      var start = ctx.currentTime + offset;
+      source.buffer = buffer;
+      filter.type = 'bandpass';
+      filter.frequency.value = 2400;
+      filter.Q.value = 0.9;
+      gain.gain.value = 0.3 - index * 0.06;
+      source.connect(filter);
+      filter.connect(gain);
+      gain.connect(ctx.destination);
+      source.start(start);
+    });
+  }
+
   function chime() {
     if (!audioCtx) return;
     try {
-      [0, 0.35, 0.7].forEach(function (offset, i) {
-        var osc = audioCtx.createOscillator();
-        var gain = audioCtx.createGain();
-        var t = audioCtx.currentTime + offset;
-        osc.type = 'sine';
-        osc.frequency.value = i === 2 ? 988 : 784;
-        gain.gain.setValueAtTime(0.0001, t);
-        gain.gain.exponentialRampToValueAtTime(0.25, t + 0.03);
-        gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.3);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start(t);
-        osc.stop(t + 0.32);
-      });
+      if (settings.chime === 'click') playWatchClick();
+      else playGong();
     } catch (err) {
       return;
     }
@@ -1684,8 +2162,10 @@ input:focus-visible {
     try {
       var payload = {
         settings: settings,
+        scratch: scratchPad ? scratchPad.value.slice(0, SCRATCH_LIMIT) : '',
         timers: {},
         pomo: pomo ? pomo.toJSON() : null,
+        stopwatch: sprint ? sprint.toJSON() : null,
         days: dayStats,
         achievements: achievements,
         cycles: cyclesCompleted,
@@ -1712,9 +2192,9 @@ input:focus-visible {
   }
 
   var MODE_TITLES = {
-    focus: { live: '🔥 Grind Time', paused: 'Grind Paused' },
-    short: { live: '☕ Break Active', paused: 'Break Paused' },
-    long: { live: '🌙 Long Rest Active', paused: 'Long Rest Paused' }
+    focus: { live: 'Grind Time', paused: 'Grind Paused' },
+    short: { live: 'Break Active', paused: 'Break Paused' },
+    long: { live: 'Long Rest Active', paused: 'Long Rest Paused' }
   };
 
   function updateTitle() {
@@ -1726,10 +2206,10 @@ input:focus-visible {
     var next = 'Study Station';
     if (running.length > 0) {
       var lead = running[0];
-      var tag = lead === pomo ? MODE_TITLES[pomo.mode].live : '⏱ ' + lead.displayName();
+      var tag = lead === pomo ? MODE_TITLES[pomo.mode].live : lead.displayName();
       next = '[' + formatClock(lead.remaining) + '] ' + tag;
     } else if (pomo && !pomo.isFresh()) {
-      next = '[' + formatClock(pomo.remaining) + '] ⏸ ' + MODE_TITLES[pomo.mode].paused;
+      next = '[' + formatClock(pomo.remaining) + '] ' + MODE_TITLES[pomo.mode].paused;
     }
     if (document.title !== next) document.title = next;
     document.documentElement.setAttribute('data-running', running.length > 0 ? 'true' : 'false');
@@ -1909,7 +2389,6 @@ input:focus-visible {
       stop: stop
     };
   })();
-
   class StudyTimer {
     constructor(key, root, defaults) {
       this.key = key;
@@ -2128,7 +2607,6 @@ input:focus-visible {
       this.render();
     }
   }
-
   function isMode(name) {
     return Object.prototype.hasOwnProperty.call(POMO_MODES, name);
   }
@@ -2154,6 +2632,7 @@ input:focus-visible {
         durHint: root.querySelector('[data-role="durHint"]')
       };
       this.tabs = Array.prototype.slice.call(root.querySelectorAll('.mode-tab'));
+      this.workloadButtons = Array.prototype.slice.call(root.querySelectorAll('[data-workload]'));
       this.tabMeta = {};
       this.durInputs = {};
       this.durations = {};
@@ -2244,6 +2723,11 @@ input:focus-visible {
       this.tabs.forEach(function (tab) {
         tab.addEventListener('click', function () { self.selectMode(tab.getAttribute('data-mode')); });
       });
+      this.workloadButtons.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          self.applyWorkload(btn.getAttribute('data-focus'), btn.getAttribute('data-break'));
+        });
+      });
       Object.keys(this.durInputs).forEach(function (key) {
         self.durInputs[key].addEventListener('input', function () { self.setDuration(key, false); });
         self.durInputs[key].addEventListener('change', function () { self.setDuration(key, true); });
@@ -2313,6 +2797,7 @@ input:focus-visible {
     reset() {
       this.stopTicker();
       this.running = false;
+      this.phaseMs = this.durations[this.mode] * 1000;
       this.remainingMs = this.phaseMs;
       this.remaining = Math.ceil(this.phaseMs / 1000);
       this.root.classList.remove('finished');
@@ -2391,6 +2876,26 @@ input:focus-visible {
       save();
     }
 
+    applyWorkload(focusRaw, breakRaw) {
+      var focusSecs = parseMinutes(focusRaw);
+      var breakSecs = parseMinutes(breakRaw);
+      if (focusSecs === null || breakSecs === null) return;
+      this.durations.focus = focusSecs;
+      this.durations.short = breakSecs;
+      if (this.mode === 'focus' && this.isFresh()) {
+        this.phaseMs = focusSecs * 1000;
+        this.remainingMs = this.phaseMs;
+        this.remaining = focusSecs;
+      } else if (this.mode === 'short' && this.isFresh()) {
+        this.phaseMs = breakSecs * 1000;
+        this.remainingMs = this.phaseMs;
+        this.remaining = breakSecs;
+      }
+      this.syncInputs();
+      this.render();
+      save();
+    }
+
     setDuration(key, commit) {
       var input = this.durInputs[key];
       var secs = parseMinutes(input.value);
@@ -2437,6 +2942,13 @@ input:focus-visible {
         var active = tab.getAttribute('data-mode') === self.mode;
         tab.classList.toggle('active', active);
         tab.setAttribute('aria-pressed', String(active));
+      });
+      this.workloadButtons.forEach(function (btn) {
+        var focusSecs = parseMinutes(btn.getAttribute('data-focus'));
+        var breakSecs = parseMinutes(btn.getAttribute('data-break'));
+        var active = focusSecs === self.durations.focus && breakSecs === self.durations.short;
+        btn.classList.toggle('active', active);
+        btn.setAttribute('aria-pressed', String(active));
       });
       Object.keys(POMO_MODES).forEach(function (key) {
         self.tabMeta[key].textContent = formatDuration(self.durations[key]) + ' · key ' + POMO_MODES[key].key;
@@ -2502,6 +3014,137 @@ input:focus-visible {
           this.remaining = Math.ceil(this.phaseMs / 1000);
         }
       }
+      this.render();
+    }
+  }
+  class SprintStopwatch {
+    constructor(root) {
+      this.root = root;
+      this.el = {
+        display: root.querySelector('[data-role="swDisplay"]'),
+        toggle: root.querySelector('[data-role="swToggle"]'),
+        reset: root.querySelector('[data-role="swReset"]'),
+        state: root.querySelector('[data-role="swState"]')
+      };
+      this.elapsed = 0;
+      this.running = false;
+      this.startedAt = 0;
+      this.frame = 0;
+      this.lastPersist = 0;
+      this.bind();
+      this.render();
+    }
+
+    bind() {
+      var self = this;
+      this.el.toggle.addEventListener('click', function () {
+        if (self.running) self.pause(); else self.start();
+      });
+      this.el.reset.addEventListener('click', function () {
+        self.reset();
+      });
+    }
+
+    start() {
+      if (this.running) return;
+      this.startedAt = Date.now() - this.elapsed;
+      this.running = true;
+      this.root.classList.add('running');
+      this.loop();
+      this.render();
+      save();
+    }
+
+    pause() {
+      if (!this.running) return;
+      this.elapsed = Math.max(0, Date.now() - this.startedAt);
+      this.running = false;
+      cancelAnimationFrame(this.frame);
+      this.frame = 0;
+      this.root.classList.remove('running');
+      this.paint();
+      this.render();
+      save();
+    }
+
+    reset() {
+      this.running = false;
+      cancelAnimationFrame(this.frame);
+      this.frame = 0;
+      this.elapsed = 0;
+      this.root.classList.remove('running');
+      this.paint();
+      this.render();
+      save();
+    }
+
+    loop() {
+      var self = this;
+      cancelAnimationFrame(this.frame);
+      var step = function () {
+        if (!self.running) return;
+        self.elapsed = Math.max(0, Date.now() - self.startedAt);
+        self.paint();
+        if (Date.now() - self.lastPersist > 2000) {
+          self.lastPersist = Date.now();
+          save();
+        }
+        self.frame = requestAnimationFrame(step);
+      };
+      this.frame = requestAnimationFrame(step);
+    }
+
+    sync() {
+      if (!this.running) {
+        this.render();
+        return;
+      }
+      this.elapsed = Math.max(0, Date.now() - this.startedAt);
+      this.loop();
+      this.paint();
+    }
+
+    format(ms) {
+      var total = Math.max(0, Math.floor(ms));
+      var hours = Math.floor(total / 3600000);
+      var minutes = Math.floor((total % 3600000) / 60000);
+      var seconds = Math.floor((total % 60000) / 1000);
+      var millis = total % 1000;
+      var msText = millis < 10 ? '00' + millis : millis < 100 ? '0' + millis : String(millis);
+      return (hours > 0 ? hours + ':' : '') + pad(minutes) + ':' + pad(seconds) + '.' + msText;
+    }
+
+    paint() {
+      this.el.display.textContent = this.format(this.elapsed);
+    }
+
+    render() {
+      if (!this.running) this.el.display.textContent = this.format(this.elapsed);
+      this.el.state.textContent = this.running ? 'Running' : this.elapsed > 0 ? 'Paused' : 'Ready';
+      this.el.toggle.textContent = this.running ? 'Pause' : this.elapsed > 0 ? 'Resume' : 'Start';
+      this.root.classList.toggle('running', this.running);
+    }
+
+    toJSON() {
+      return { elapsed: this.elapsed, running: this.running, startedAt: this.startedAt };
+    }
+
+    restore(data) {
+      if (!data || typeof data !== 'object') return;
+      var elapsed = Number(data.elapsed);
+      this.elapsed = isFinite(elapsed) && elapsed > 0 ? Math.min(elapsed, 359999000) : 0;
+      var startedAt = Number(data.startedAt);
+      if (data.running === true && isFinite(startedAt)) {
+        var live = Date.now() - startedAt;
+        if (live > 0) {
+          this.elapsed = Math.min(live, 359999000);
+          this.startedAt = startedAt;
+          this.running = true;
+          this.root.classList.add('running');
+          this.loop();
+        }
+      }
+      this.paint();
       this.render();
     }
   }
@@ -2668,6 +3311,23 @@ input:focus-visible {
     renderLog(animate);
     if (animate) replay(matrixCard, 'bump', 1600);
   }
+  function applyFont(id) {
+    var next = Object.prototype.hasOwnProperty.call(FONT_LABELS, id) ? id : DEFAULT_SETTINGS.font;
+    settings.font = next;
+    document.documentElement.setAttribute('data-font', next);
+    Array.prototype.forEach.call(document.querySelectorAll('[data-font-option]'), function (btn) {
+      var active = btn.getAttribute('data-font-option') === next;
+      btn.classList.toggle('active', active);
+      btn.setAttribute('aria-pressed', String(active));
+    });
+  }
+
+  function applyChime(id) {
+    settings.chime = id === 'click' ? 'click' : 'gong';
+    Array.prototype.forEach.call(document.querySelectorAll('[data-chime]'), function (btn) {
+      btn.setAttribute('aria-pressed', String(btn.getAttribute('data-chime') === settings.chime));
+    });
+  }
 
   function applySettings() {
     var rootStyle = document.documentElement.style;
@@ -2678,6 +3338,8 @@ input:focus-visible {
     blurValue.textContent = settings.blur + 'px';
     bgPicker.value = settings.bg;
     textPicker.value = settings.text;
+    applyFont(settings.font);
+    applyChime(settings.chime);
   }
 
   function setPanel(open) {
@@ -2688,10 +3350,12 @@ input:focus-visible {
   }
 
   function pushBlur(e) {
-    document.documentElement.style.setProperty('--blur-intensity', e.target.value + 'px');
-    settings.blur = Number(e.target.value);
-    blurValue.textContent = e.target.value + 'px';
-    save();
+    var value = Math.max(0, Math.min(64, Math.round(Number(e.target.value))));
+    document.documentElement.style.setProperty('--blur-intensity', value + 'px');
+    settings.blur = value;
+    blurValue.textContent = value + 'px';
+    clearTimeout(blurSaveTimer);
+    blurSaveTimer = setTimeout(save, 180);
   }
 
   function pushBackground(e) {
@@ -2707,9 +3371,44 @@ input:focus-visible {
   }
 
   ['input', 'change'].forEach(function (evt) {
-    document.getElementById('blurSlider').addEventListener(evt, pushBlur);
-    document.getElementById('bgPicker').addEventListener(evt, pushBackground);
-    document.getElementById('textPicker').addEventListener(evt, pushText);
+    blurSlider.addEventListener(evt, pushBlur);
+    bgPicker.addEventListener(evt, pushBackground);
+    textPicker.addEventListener(evt, pushText);
+  });
+
+  blurSlider.addEventListener('change', function () {
+    clearTimeout(blurSaveTimer);
+    save();
+  });
+
+  if (scratchPad) {
+    scratchPad.addEventListener('input', function () {
+      clearTimeout(scratchSaveTimer);
+      scratchSaveTimer = setTimeout(save, 400);
+    });
+    scratchPad.addEventListener('blur', function () {
+      clearTimeout(scratchSaveTimer);
+      save();
+    });
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll('[data-font-option]'), function (btn) {
+    btn.addEventListener('click', function () {
+      applyFont(btn.getAttribute('data-font-option'));
+      save();
+    });
+  });
+
+  Array.prototype.forEach.call(document.querySelectorAll('[data-chime]'), function (btn) {
+    btn.addEventListener('click', function () {
+      applyChime(btn.getAttribute('data-chime'));
+      save();
+    });
+  });
+
+  chimePreviewBtn.addEventListener('click', function () {
+    wakeAudio();
+    chime();
   });
 
   resetAppearanceBtn.addEventListener('click', function () {
@@ -2748,15 +3447,22 @@ input:focus-visible {
   });
 
   window.addEventListener('beforeunload', save);
+  window.addEventListener('pagehide', save);
 
   var saved = readSaved();
 
   if (saved && saved.settings) {
     var s = saved.settings;
     var blur = Number(s.blur);
-    if (isFinite(blur) && blur >= 0 && blur <= 64 && LEGACY_BLURS.indexOf(Math.round(blur)) === -1) settings.blur = Math.round(blur);
-    if (typeof s.bg === 'string' && HEX.test(s.bg) && LEGACY_BGS.indexOf(s.bg.toLowerCase()) === -1) settings.bg = s.bg;
+    if (isFinite(blur) && blur >= 0 && blur <= 64) settings.blur = Math.round(blur);
+    if (typeof s.bg === 'string' && HEX.test(s.bg)) settings.bg = s.bg;
     if (typeof s.text === 'string' && HEX.test(s.text)) settings.text = s.text;
+    if (typeof s.font === 'string' && Object.prototype.hasOwnProperty.call(FONT_LABELS, s.font)) settings.font = s.font;
+    if (s.chime === 'click' || s.chime === 'gong') settings.chime = s.chime;
+  }
+
+  if (saved && typeof saved.scratch === 'string' && scratchPad) {
+    scratchPad.value = saved.scratch.slice(0, SCRATCH_LIMIT);
   }
 
   if (saved && Array.isArray(saved.log)) {
@@ -2789,11 +3495,16 @@ input:focus-visible {
   pomo = new FocusCore(document.getElementById('pomo'));
   if (saved && saved.pomo) pomo.restore(saved.pomo);
 
+  sprint = new SprintStopwatch(document.getElementById('stopwatchCard'));
+  if (saved && saved.stopwatch) sprint.restore(saved.stopwatch);
+
   document.addEventListener('keydown', function (e) {
     if (e.ctrlKey || e.metaKey || e.altKey || e.repeat) return;
-    var tag = e.target && e.target.tagName;
-    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || tag === 'BUTTON') return;
+    var target = e.target;
+    var tag = target && target.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || (target && target.isContentEditable)) return;
     if (e.code === 'Space') {
+      if (tag === 'BUTTON') return;
       e.preventDefault();
       pomo.toggle();
     } else if (e.key === '1' || e.key === '2' || e.key === '3') {
@@ -2805,13 +3516,17 @@ input:focus-visible {
 
   (function trackCursorGlow() {
     var shard = document.getElementById('cursor-glow-shard');
-    var pointerX = 0;
-    var pointerY = 0;
+    var pointerX = window.innerWidth / 2;
+    var pointerY = window.innerHeight / 3;
+    var targetX = pointerX;
+    var targetY = pointerY;
     var hasPointer = false;
     var frameQueued = false;
 
     function paintShard() {
       frameQueued = false;
+      pointerX = targetX;
+      pointerY = targetY;
       shard.style.setProperty('--mouse-x', pointerX + 'px');
       shard.style.setProperty('--mouse-y', pointerY + 'px');
     }
@@ -2824,16 +3539,16 @@ input:focus-visible {
 
     function restPosition() {
       if (hasPointer) return;
-      pointerX = window.innerWidth / 2;
-      pointerY = window.innerHeight / 3;
+      targetX = window.innerWidth / 2;
+      targetY = window.innerHeight / 3;
       queuePaint();
     }
 
     window.addEventListener('mousemove', function (e) {
       if (!hasPointer && e.clientX === 0 && e.clientY === 0) return;
       hasPointer = true;
-      pointerX = e.clientX;
-      pointerY = e.clientY;
+      targetX = e.clientX;
+      targetY = e.clientY;
       queuePaint();
     }, { passive: true });
 
@@ -2851,6 +3566,7 @@ input:focus-visible {
       heartbeat.stop();
       pumpTimers();
       renderDashboard();
+      if (sprint) sprint.sync();
     }
   });
 
