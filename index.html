@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600&family=Montserrat:wght@200;300;400;500;600&display=swap">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='-12%20-12%2088%2088'%3E%3Ccircle%20cx='32'%20cy='36'%20r='22'%20stroke='white'%20stroke-width='3'%20fill='none'/%3E%3Cpath%20d='M32%2014v4M32%2020v4M22%2036h4M32%2036l8-8'%20stroke='white'%20stroke-width='3'%20stroke-linecap='round'/%3E%3Cpath%20d='M32%2036l12-14'%20stroke='white'%20stroke-width='2'%20stroke-linecap='round'/%3E%3Cpath%20d='M24%208h16M32%204v4'%20stroke='white'%20stroke-width='4'%20stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='-12%20-12%2088%2088'%3E%3Crect%20x='26'%20y='2.5'%20width='12'%20height='5.5'%20rx='1.5'%20fill='none'%20stroke='white'%20stroke-width='1.5'/%3E%3Cline%20x1='32'%20y1='8'%20x2='32'%20y2='12'%20stroke='white'%20stroke-width='1.5'%20stroke-linecap='round'/%3E%3Cline%20x1='49.5'%20y1='15.5'%20x2='53'%20y2='12'%20stroke='white'%20stroke-width='2'%20stroke-linecap='round'/%3E%3Ccircle%20cx='32'%20cy='36'%20r='24'%20fill='black'%20stroke='white'%20stroke-opacity='0.6'%20stroke-width='1.5'/%3E%3Ccircle%20cx='32'%20cy='36'%20r='20'%20fill='none'%20stroke='white'%20stroke-opacity='0.2'%20stroke-width='2'/%3E%3Ccircle%20cx='32'%20cy='36'%20r='20'%20fill='none'%20stroke='white'%20stroke-width='2.5'%20stroke-linecap='round'%20stroke-dasharray='94%2032'%20transform='rotate(-90%2032%2036)'/%3E%3Cg%20stroke='white'%20stroke-width='1.6'%20stroke-linecap='round'%3E%3Cline%20x1='32'%20y1='18'%20x2='32'%20y2='21'/%3E%3Cline%20x1='50'%20y1='36'%20x2='47'%20y2='36'/%3E%3Cline%20x1='32'%20y1='54'%20x2='32'%20y2='51'/%3E%3Cline%20x1='14'%20y1='36'%20x2='17'%20y2='36'/%3E%3C/g%3E%3Cpolygon%20points='32,22.5%2033.8,36%2030.2,36'%20fill='white'/%3E%3Cpolygon%20points='32,28%2033.7,36%2030.3,36'%20fill='white'%20transform='rotate(115%2032%2036)'/%3E%3Ccircle%20cx='32'%20cy='36'%20r='2.4'%20fill='white'/%3E%3C/svg%3E">
 <script>
 (function () {
   try {
@@ -845,6 +845,8 @@ input:focus-visible {
 .scratch-input {
   width: 100%;
   height: 56px;
+  max-height: 96px;
+  overflow-y: auto;
   padding: 8px 10px;
   border: 1px solid var(--hair);
   border-radius: 12px;
@@ -1346,6 +1348,49 @@ input:focus-visible {
   min-width: 0;
 }
 
+.sw-laps {
+  list-style: none;
+  margin: 0;
+  padding: 12px 4px 0 0;
+  border-top: 1px solid var(--hair-soft);
+  display: grid;
+  gap: 6px;
+  max-height: 148px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.16) transparent;
+}
+
+.sw-laps[hidden] {
+  display: none;
+}
+
+.sw-laps li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: baseline;
+  font-size: 0.75rem;
+  line-height: 18px;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+}
+
+.sw-laps .lap-index {
+  color: var(--text-muted);
+}
+
+.sw-laps .lap-split {
+  color: var(--text-color);
+  text-align: right;
+}
+
+.sw-laps .lap-total {
+  min-width: 64px;
+  color: var(--text-muted);
+  text-align: right;
+}
+
 .log-head {
   display: flex;
   align-items: center;
@@ -1486,6 +1531,24 @@ input:focus-visible {
   font-size: 0.75rem;
   line-height: 1.5;
   color: #a1a1a6;
+}
+
+.data-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.data-status {
+  min-height: 18px;
+  margin: 10px 0 0;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: #a1a1a6;
+}
+
+.data-status[data-tone="error"] {
+  color: #ffb4a8;
 }
 
 .font-options {
@@ -1910,8 +1973,10 @@ input:focus-visible {
               <p class="stopwatch-sub">Freeform timing for flashcard speed runs and open-ended past papers. Runs on its own clock, independent of Focus Core.</p>
               <div class="stopwatch-actions">
                 <button class="btn btn-primary" type="button" data-role="swToggle">Start</button>
+                <button class="btn" type="button" data-role="swLap" disabled>Lap</button>
                 <button class="btn" type="button" data-role="swReset">Reset</button>
               </div>
+              <ol class="sw-laps" data-role="swLaps" aria-label="Lap times" hidden></ol>
             </article>
           </div>
         </section>
@@ -1975,6 +2040,17 @@ input:focus-visible {
       <button class="btn btn-block" id="resetAppearance" type="button">Reset appearance</button>
     </section>
 
+    <section class="set-group" aria-label="Data">
+      <h3 class="set-title">Data</h3>
+      <p class="set-note">Download a JSON copy of your settings, timers, lap times, progress and scratch pad. Importing replaces this browser's current data.</p>
+      <div class="data-actions">
+        <button class="btn btn-small" type="button" data-role="exportBackup">Export backup</button>
+        <button class="btn btn-small" type="button" data-role="importBackup">Import backup</button>
+        <input type="file" accept="application/json,.json" data-role="importFile" hidden>
+      </div>
+      <p class="data-status" data-role="dataStatus" aria-live="polite"></p>
+    </section>
+
     <p class="panel-note">Everything on this page is saved in this browser only: timer names, durations, typeface, chime, appearance and your session log.</p>
   </aside>
 </div>
@@ -1985,6 +2061,7 @@ input:focus-visible {
   var STORE_KEY = 'studyStation.v1';
   var MAX_SECONDS = 36000;
   var LOG_LIMIT = 100;
+  var LAP_LIMIT = 99;
   var DEFAULT_SETTINGS = { blur: 40, bg: '#030406', text: '#ffffff', font: 'apple', chime: 'gong' };
   var HEX = /^#[0-9a-fA-F]{6}$/;
   var POMO_ROUNDS = 4;
@@ -1999,6 +2076,9 @@ input:focus-visible {
   var HEAT_WEEKS = 4;
   var DAY_LIMIT = 400;
   var SCRATCH_LIMIT = 2000;
+  var MIN_SCRATCH_HEIGHT = 56;
+  var MAX_SCRATCH_HEIGHT = 96;
+  var BACKUP_LIMIT = 5 * 1024 * 1024;
 
   var settings = {
     blur: DEFAULT_SETTINGS.blur,
@@ -2021,6 +2101,7 @@ input:focus-visible {
   var countFrame = 0;
   var blurSaveTimer = 0;
   var scratchSaveTimer = 0;
+  var importReloading = false;
 
   var ACHIEVEMENTS = [
     { id: 'first', name: 'First Block', note: 'Finish one session', test: function (s) { return s.count >= 1; } },
@@ -2040,6 +2121,10 @@ input:focus-visible {
   var bgPicker = document.getElementById('bgPicker');
   var textPicker = document.getElementById('textPicker');
   var resetAppearanceBtn = document.getElementById('resetAppearance');
+  var exportBackupBtn = document.querySelector('[data-role="exportBackup"]');
+  var importBackupBtn = document.querySelector('[data-role="importBackup"]');
+  var importFileInput = document.querySelector('[data-role="importFile"]');
+  var dataStatusEl = document.querySelector('[data-role="dataStatus"]');
   var scratchPad = document.getElementById('scratchPad');
   var chimePreviewBtn = document.getElementById('chimePreview');
   var totalFocusEl = document.getElementById('totalFocus');
@@ -2158,25 +2243,30 @@ input:focus-visible {
     }
   }
 
+  function buildPayload() {
+    var payload = {
+      settings: settings,
+      scratch: scratchPad ? scratchPad.value.slice(0, SCRATCH_LIMIT) : '',
+      timers: {},
+      pomo: pomo ? pomo.toJSON() : null,
+      stopwatch: sprint ? sprint.toJSON() : null,
+      days: dayStats,
+      achievements: achievements,
+      cycles: cyclesCompleted,
+      log: sessionLog,
+      totalSeconds: totalSeconds,
+      completedCount: completedCount
+    };
+    Object.keys(timers).forEach(function (key) {
+      payload.timers[key] = timers[key].toJSON();
+    });
+    return payload;
+  }
+
   function save() {
+    if (importReloading) return;
     try {
-      var payload = {
-        settings: settings,
-        scratch: scratchPad ? scratchPad.value.slice(0, SCRATCH_LIMIT) : '',
-        timers: {},
-        pomo: pomo ? pomo.toJSON() : null,
-        stopwatch: sprint ? sprint.toJSON() : null,
-        days: dayStats,
-        achievements: achievements,
-        cycles: cyclesCompleted,
-        log: sessionLog,
-        totalSeconds: totalSeconds,
-        completedCount: completedCount
-      };
-      Object.keys(timers).forEach(function (key) {
-        payload.timers[key] = timers[key].toJSON();
-      });
-      localStorage.setItem(STORE_KEY, JSON.stringify(payload));
+      localStorage.setItem(STORE_KEY, JSON.stringify(buildPayload()));
     } catch (err) {
       return;
     }
@@ -2189,6 +2279,94 @@ input:focus-visible {
     } catch (err) {
       return null;
     }
+  }
+
+  function setDataStatus(message, tone) {
+    if (!dataStatusEl) return;
+    dataStatusEl.textContent = message;
+    dataStatusEl.setAttribute('data-tone', tone || '');
+  }
+
+  function isBackup(data) {
+    return !!data && typeof data === 'object' && !Array.isArray(data) &&
+      data.settings && typeof data.settings === 'object' &&
+      data.timers && typeof data.timers === 'object' &&
+      Array.isArray(data.log);
+  }
+
+  function exportBackup() {
+    if (typeof Blob !== 'function' || !window.URL || typeof URL.createObjectURL !== 'function') {
+      setDataStatus('Backup export is not supported in this browser.', 'error');
+      return;
+    }
+    try {
+      var blob = new Blob([JSON.stringify(buildPayload(), null, 2)], { type: 'application/json' });
+      var url = URL.createObjectURL(blob);
+      var link = document.createElement('a');
+      link.href = url;
+      link.download = 'study-station-backup-' + dayKey(new Date()) + '.json';
+      link.rel = 'noopener';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+      setDataStatus('Backup downloaded.', 'ok');
+    } catch (err) {
+      setDataStatus('Could not create the backup file.', 'error');
+    }
+  }
+
+  function importBackupFile(file) {
+    if (!file) return;
+    if (file.size > BACKUP_LIMIT) {
+      setDataStatus('That backup is too large.', 'error');
+      importFileInput.value = '';
+      return;
+    }
+    setDataStatus('Reading backup…', '');
+    var reader = new FileReader();
+    reader.onload = function () {
+      importFileInput.value = '';
+      var data;
+      try {
+        data = JSON.parse(String(reader.result));
+      } catch (err) {
+        setDataStatus('That file is not valid JSON.', 'error');
+        return;
+      }
+      if (!isBackup(data)) {
+        setDataStatus('That file is not a Study Station backup.', 'error');
+        return;
+      }
+      if (!window.confirm('Import this backup? It will replace all current Study Station data in this browser.')) {
+        setDataStatus('Import cancelled.', '');
+        return;
+      }
+      try {
+        localStorage.setItem(STORE_KEY, JSON.stringify(data));
+      } catch (err) {
+        setDataStatus('Could not save the imported backup.', 'error');
+        return;
+      }
+      importReloading = true;
+      setDataStatus('Backup imported. Reloading…', 'ok');
+      window.setTimeout(function () { location.reload(); }, 250);
+    };
+    reader.onerror = function () {
+      importFileInput.value = '';
+      setDataStatus('Could not read that file.', 'error');
+    };
+    reader.readAsText(file);
+  }
+
+  function sizeScratch() {
+    if (!scratchPad) return;
+    scratchPad.style.height = 'auto';
+    var border = Math.max(0, scratchPad.offsetHeight - scratchPad.clientHeight);
+    var next = scratchPad.scrollHeight + border;
+    if (next < MIN_SCRATCH_HEIGHT) next = MIN_SCRATCH_HEIGHT;
+    if (next > MAX_SCRATCH_HEIGHT) next = MAX_SCRATCH_HEIGHT;
+    scratchPad.style.height = next + 'px';
   }
 
   var MODE_TITLES = {
@@ -3023,14 +3201,17 @@ input:focus-visible {
       this.el = {
         display: root.querySelector('[data-role="swDisplay"]'),
         toggle: root.querySelector('[data-role="swToggle"]'),
+        lap: root.querySelector('[data-role="swLap"]'),
         reset: root.querySelector('[data-role="swReset"]'),
-        state: root.querySelector('[data-role="swState"]')
+        state: root.querySelector('[data-role="swState"]'),
+        laps: root.querySelector('[data-role="swLaps"]')
       };
       this.elapsed = 0;
       this.running = false;
       this.startedAt = 0;
       this.frame = 0;
       this.lastPersist = 0;
+      this.laps = [];
       this.bind();
       this.render();
     }
@@ -3039,6 +3220,9 @@ input:focus-visible {
       var self = this;
       this.el.toggle.addEventListener('click', function () {
         if (self.running) self.pause(); else self.start();
+      });
+      this.el.lap.addEventListener('click', function () {
+        self.lap();
       });
       this.el.reset.addEventListener('click', function () {
         self.reset();
@@ -3072,8 +3256,16 @@ input:focus-visible {
       cancelAnimationFrame(this.frame);
       this.frame = 0;
       this.elapsed = 0;
+      this.laps = [];
       this.root.classList.remove('running');
       this.paint();
+      this.render();
+      save();
+    }
+
+    lap() {
+      if (!this.running || this.laps.length >= LAP_LIMIT) return;
+      this.laps.push(Math.floor(this.elapsed));
       this.render();
       save();
     }
@@ -3118,21 +3310,60 @@ input:focus-visible {
       this.el.display.textContent = this.format(this.elapsed);
     }
 
+    renderLaps() {
+      var list = this.el.laps;
+      if (!list) return;
+      while (list.firstChild) list.removeChild(list.firstChild);
+      if (this.laps.length === 0) {
+        list.hidden = true;
+        return;
+      }
+      list.hidden = false;
+      for (var i = this.laps.length - 1; i >= 0; i--) {
+        var total = this.laps[i];
+        var split = total - (i > 0 ? this.laps[i - 1] : 0);
+        var li = document.createElement('li');
+        var no = document.createElement('span');
+        var sp = document.createElement('span');
+        var tt = document.createElement('span');
+        no.className = 'lap-index';
+        sp.className = 'lap-split';
+        tt.className = 'lap-total';
+        no.textContent = 'Lap ' + (i + 1);
+        sp.textContent = this.format(split);
+        tt.textContent = this.format(total);
+        li.appendChild(no);
+        li.appendChild(sp);
+        li.appendChild(tt);
+        list.appendChild(li);
+      }
+    }
+
     render() {
       if (!this.running) this.el.display.textContent = this.format(this.elapsed);
       this.el.state.textContent = this.running ? 'Running' : this.elapsed > 0 ? 'Paused' : 'Ready';
       this.el.toggle.textContent = this.running ? 'Pause' : this.elapsed > 0 ? 'Resume' : 'Start';
+      this.el.lap.disabled = !this.running || this.laps.length >= LAP_LIMIT;
       this.root.classList.toggle('running', this.running);
+      this.renderLaps();
     }
 
     toJSON() {
-      return { elapsed: this.elapsed, running: this.running, startedAt: this.startedAt };
+      return { elapsed: this.elapsed, running: this.running, startedAt: this.startedAt, laps: this.laps };
     }
 
     restore(data) {
       if (!data || typeof data !== 'object') return;
       var elapsed = Number(data.elapsed);
       this.elapsed = isFinite(elapsed) && elapsed > 0 ? Math.min(elapsed, 359999000) : 0;
+      if (Array.isArray(data.laps)) {
+        this.laps = data.laps.map(Number).filter(function (v) {
+          return isFinite(v) && v >= 0 && v <= 359999000;
+        }).slice(0, LAP_LIMIT);
+        this.laps.sort(function (a, b) { return a - b; });
+      } else {
+        this.laps = [];
+      }
       var startedAt = Number(data.startedAt);
       if (data.running === true && isFinite(startedAt)) {
         var live = Date.now() - startedAt;
@@ -3315,6 +3546,7 @@ input:focus-visible {
     var next = Object.prototype.hasOwnProperty.call(FONT_LABELS, id) ? id : DEFAULT_SETTINGS.font;
     settings.font = next;
     document.documentElement.setAttribute('data-font', next);
+    sizeScratch();
     Array.prototype.forEach.call(document.querySelectorAll('[data-font-option]'), function (btn) {
       var active = btn.getAttribute('data-font-option') === next;
       btn.classList.toggle('active', active);
@@ -3383,6 +3615,7 @@ input:focus-visible {
 
   if (scratchPad) {
     scratchPad.addEventListener('input', function () {
+      sizeScratch();
       clearTimeout(scratchSaveTimer);
       scratchSaveTimer = setTimeout(save, 400);
     });
@@ -3390,6 +3623,7 @@ input:focus-visible {
       clearTimeout(scratchSaveTimer);
       save();
     });
+    window.addEventListener('resize', sizeScratch);
   }
 
   Array.prototype.forEach.call(document.querySelectorAll('[data-font-option]'), function (btn) {
@@ -3417,6 +3651,16 @@ input:focus-visible {
     settings.text = DEFAULT_SETTINGS.text;
     applySettings();
     save();
+  });
+
+  exportBackupBtn.addEventListener('click', exportBackup);
+
+  importBackupBtn.addEventListener('click', function () {
+    importFileInput.click();
+  });
+
+  importFileInput.addEventListener('change', function () {
+    importBackupFile(importFileInput.files && importFileInput.files[0]);
   });
 
   toggleBtn.addEventListener('click', function () {
@@ -3463,6 +3707,7 @@ input:focus-visible {
 
   if (saved && typeof saved.scratch === 'string' && scratchPad) {
     scratchPad.value = saved.scratch.slice(0, SCRATCH_LIMIT);
+    sizeScratch();
   }
 
   if (saved && Array.isArray(saved.log)) {
